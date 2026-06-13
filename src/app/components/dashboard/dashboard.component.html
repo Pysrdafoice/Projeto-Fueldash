@@ -1,0 +1,41 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1>FuelDash<span class="dot">.</span></h1>
+      <div class="user-info">
+        <span *ngIf="userData"
+          >Bem-vindo, <strong>{{ userData.username }}</strong></span
+        >
+        <button class="btn-logout" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="dashboard-grid">
+      <div class="card">
+        <h2>📊 Relatórios</h2>
+        <p>Acompanhe seus gastos com combustível</p>
+      </div>
+
+      <div class="card">
+        <h2>🚗 Veículos</h2>
+        <p>Gerencie seus veículos e rotas</p>
+      </div>
+
+      <div class="card">
+        <h2>💰 Custos</h2>
+        <p>Análise de custos de abastecimento</p>
+      </div>
+
+      <div class="card">
+        <h2>📍 Rotas</h2>
+        <p>Otimize suas rotas de entrega</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="dashboard-footer">
+    <p>FuelDash © 2026 - Dashboard Inteligente de Gestão de Abastecimento</p>
+  </footer>
+</div>

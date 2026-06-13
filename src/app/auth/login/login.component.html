@@ -1,0 +1,102 @@
+<div class="login-page">
+  <div class="login-card">
+    <!-- Logo/Brand -->
+    <div class="brand">
+      <h1>FuelDash<span class="dot">.</span></h1>
+    </div>
+
+    <!-- Título e descrição -->
+    <div class="login-header">
+      <h2>Bem-vindo</h2>
+      <p>Entre na sua conta para continuar</p>
+    </div>
+
+    <!-- Erro global -->
+    <div *ngIf="errorMessage" class="error-global">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Formulário de login -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Campo Username -->
+      <div class="form-group">
+        <label for="username">Usuário</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          placeholder="admin"
+          class="form-control"
+        />
+        <div class="error-field" *ngIf="username.errors && username.touched">
+          <span *ngIf="username.errors['required']">
+            Usuário é obrigatório
+          </span>
+          <span *ngIf="username.errors['minlength']">
+            Mínimo 3 caracteres
+          </span>
+        </div>
+      </div>
+
+      <!-- Campo Password -->
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <div class="input-icon-wrap">
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="••••••"
+            class="form-control"
+          />
+          <button
+            type="button"
+            class="btn-toggle-password"
+            (click)="togglePassword()"
+            tabindex="-1"
+          >
+            <span *ngIf="!showPassword">👁️</span>
+            <span *ngIf="showPassword">👁️‍🗨️</span>
+          </button>
+        </div>
+        <div class="error-field" *ngIf="password.errors && password.touched">
+          <span *ngIf="password.errors['required']"> Senha é obrigatória </span>
+          <span *ngIf="password.errors['minlength']">
+            Mínimo 4 caracteres
+          </span>
+        </div>
+      </div>
+
+      <!-- Checkbox de termos -->
+      <div class="form-group checkbox-terms">
+        <input id="acceptTerms" type="checkbox" formControlName="acceptTerms" />
+        <label for="acceptTerms">
+          Aceito os
+          <a href="javascript:void(0)" class="link-accent">termos de uso</a>
+        </label>
+        <div
+          class="error-field"
+          *ngIf="acceptTerms.errors && acceptTerms.touched"
+        >
+          Você deve aceitar os termos
+        </div>
+      </div>
+
+      <!-- Botão Submit -->
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="loginForm.invalid || isLoading"
+      >
+        {{ isLoading ? "Entrando..." : "Entrar" }}
+      </button>
+    </form>
+
+    <!-- Link para Esqueci Senha -->
+    <div class="forgot-password-link">
+      <a routerLink="/forgot-password" class="link-accent">
+        Esqueci minha senha
+      </a>
+    </div>
+  </div>
+</div>

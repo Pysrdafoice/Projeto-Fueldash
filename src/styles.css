@@ -1,1 +1,241 @@
-/* You can add global styles to this file, and also import other style files */
+/**
+ * ESTILOS GLOBAIS - FuelDash
+ * ============================================
+ * Tipografia, variáveis CSS, reset e temas globais
+ */
+
+/* ========================================
+   1. IMPORT DE FONTES GOOGLE
+   ======================================== */
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap");
+
+/* ========================================
+   2. VARIÁVEIS CSS CUSTOMIZADAS
+   ======================================== */
+:root {
+  /* CORES - Paleta Escura */
+  --bg: #0d0f14; /* Fundo principal */
+  --surface: #141720; /* Superfície dos cards */
+  --surface2: #1c2030; /* Superfície secundária (inputs) */
+
+  /* BORDAS */
+  --border: rgba(255, 255, 255, 0.06); /* Borda sutil */
+  --border-hover: rgba(255, 255, 255, 0.12); /* Borda ao hover */
+
+  /* ACCENT COLOR */
+  --accent: #f97316; /* Laranja - cor de destaque */
+  --accent-hover: #ea6c0a; /* Laranja mais escuro */
+
+  /* TEXTO */
+  --text: #f1f0ed; /* Texto principal */
+  --text-muted: #7a7d8a; /* Texto secundário */
+
+  /* STATUS COLORS */
+  --green: #22c55e; /* Sucesso */
+  --red: #ef4444; /* Erro */
+  --blue: #60a5fa; /* Info */
+
+  /* BORDER RADIUS */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* TYPOGRAPHY */
+  --font-primary: "Syne", sans-serif; /* Títulos */
+  --font-secondary: "DM Sans", sans-serif; /* Corpo */
+}
+
+/* ========================================
+   3. RESET CSS
+   ======================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+/* ========================================
+   4. ESTILOS GLOBAIS
+   ======================================== */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-secondary);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ========================================
+   5. TIPOGRAFIA GLOBAL
+   ======================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+/* ========================================
+   6. BOTÕES GLOBAIS
+   ======================================== */
+button {
+  font-family: var(--font-secondary);
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ========================================
+   7. INPUTS E FORMS GLOBAIS
+   ======================================== */
+input,
+textarea,
+select {
+  font-family: var(--font-secondary);
+  color: var(--text);
+  background-color: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: var(--border-hover);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+/* Remove spinner dos inputs number */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ========================================
+   8. SCROLLBAR CUSTOMIZADA
+   ======================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* ========================================
+   9. UTILITY CLASSES
+   ======================================== */
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.text-success {
+  color: var(--green);
+}
+
+.text-error {
+  color: var(--red);
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* ========================================
+   10. RESPONSIVIDADE GLOBAL
+   ======================================== */
+@media (max-width: 768px) {
+  body {
+    font-size: 13px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 12px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+}
