@@ -11,7 +11,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ForgotPasswordStep } from '../../core/models/user.model';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../../auth/services/auth.service';
 
 /**
  * Validator customizado para validar se as senhas coincidem

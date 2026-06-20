@@ -1,0 +1,208 @@
+<!-- vehicles.component.html -->
+
+<!-- ===== MODO LISTA ===== -->
+@if (viewMode === 'list') {
+<div class="vehicles-container">
+
+  <div class="panel-header">
+    <div class="panel-title">
+      <span class="panel-icon">🚗</span>
+      <h2>Meus Veículos</h2>
+    </div>
+    <button class="btn-novo" (click)="openForm()">
+      + Novo veículo
+    </button>
+  </div>
+
+  <!-- Lista com veículos -->
+  @if (vehicles.length > 0) {
+  <div class="vehicles-list">
+    @for (vehicle of vehicles; track vehicle.id) {
+    <div class="vehicle-card" [class.active]="isActive(vehicle.id)">
+
+      <div class="vehicle-card-header">
+        <div class="vehicle-avatar">🚗</div>
+        <div class="vehicle-info">
+          <span class="vehicle-apelido">{{ vehicle.apelido }}</span>
+          <span class="vehicle-detalhe">
+            {{ vehicle.marca }} {{ vehicle.modelo }} · {{ vehicle.ano }} · {{ vehicle.combustivel }}
+          </span>
+          <span class="vehicle-placa">{{ vehicle.placa }}</span>
+        </div>
+        @if (isActive(vehicle.id)) {
+          <span class="badge-ativo">Ativo</span>
+        }
+      </div>
+
+      <div class="vehicle-card-stats">
+        <div class="stat">
+          <span class="stat-label">Consumo médio</span>
+          <span class="stat-value">{{ vehicle.consumoMedio }} km/L</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Km atual</span>
+          <span class="stat-value">{{ vehicle.kmAtual | number }} km</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Combustível</span>
+          <span class="stat-value">{{ vehicle.combustivel }}</span>
+        </div>
+      </div>
+
+      <div class="vehicle-card-actions">
+        @if (!isActive(vehicle.id)) {
+          <button class="btn-action btn-definir"
+                  (click)="setActive(vehicle.id)">
+            ⭐ Definir como ativo
+          </button>
+        }
+        <button class="btn-action btn-editar"
+                (click)="openForm(vehicle)">
+          ✏️ Editar
+        </button>
+        <button class="btn-action btn-deletar"
+                (click)="deleteVehicle(vehicle.id)">
+          🗑️ Excluir
+        </button>
+      </div>
+
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Estado vazio -->
+  @if (vehicles.length === 0) {
+  <div class="empty-state">
+    <div class="empty-icon">🚘</div>
+    <p class="empty-title">Nenhum veículo cadastrado</p>
+    <p class="empty-sub">Adicione seu primeiro veículo para começar</p>
+    <button class="btn-novo-empty" (click)="openForm()">
+      + Adicionar veículo
+    </button>
+  </div>
+  }
+
+</div>
+}
+
+<!-- ===== MODO FORMULÁRIO ===== -->
+@if (viewMode === 'form') {
+<div class="vehicles-container">
+
+  <div class="panel-header">
+    <div class="panel-title">
+      <button class="btn-voltar" (click)="backToList()">←</button>
+      <h2>{{ editingId ? 'Editar Veículo' : 'Novo Veículo' }}</h2>
+    </div>
+  </div>
+
+  <form class="vehicle-form" [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
+
+    <div class="form-section-label">Identificação</div>
+
+    <div class="form-group">
+      <label class="form-label">Apelido do veículo</label>
+      <input class="form-input" type="text"
+             placeholder="Ex: Meu Civic"
+             formControlName="apelido">
+      @if (getError('apelido')) {
+        <span class="form-error">{{ getError('apelido') }}</span>
+      }
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Marca</label>
+        <input class="form-input" type="text"
+               placeholder="Ex: Honda"
+               formControlName="marca">
+        @if (getError('marca')) {
+          <span class="form-error">{{ getError('marca') }}</span>
+        }
+      </div>
+      <div class="form-group">
+        <label class="form-label">Modelo</label>
+        <input class="form-input" type="text"
+               placeholder="Ex: Civic"
+               formControlName="modelo">
+        @if (getError('modelo')) {
+          <span class="form-error">{{ getError('modelo') }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Ano</label>
+        <input class="form-input" type="number"
+               placeholder="Ex: 2021"
+               formControlName="ano">
+        @if (getError('ano')) {
+          <span class="form-error">{{ getError('ano') }}</span>
+        }
+      </div>
+      <div class="form-group">
+        <label class="form-label">Placa</label>
+        <input class="form-input" type="text"
+               placeholder="Ex: ABC-1234"
+               formControlName="placa">
+        @if (getError('placa')) {
+          <span class="form-error">{{ getError('placa') }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="form-section-label">Dados técnicos</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Combustível</label>
+        <select class="form-input" formControlName="combustivel">
+          <option value="">Selecione</option>
+          <option>Flex</option>
+          <option>Gasolina</option>
+          <option>Etanol</option>
+          <option>Diesel</option>
+          <option>Elétrico</option>
+        </select>
+        @if (getError('combustivel')) {
+          <span class="form-error">{{ getError('combustivel') }}</span>
+        }
+      </div>
+      <div class="form-group">
+        <label class="form-label">Consumo médio (km/L)</label>
+        <input class="form-input" type="number"
+               placeholder="Ex: 11.4" step="0.1"
+               formControlName="consumoMedio">
+        @if (getError('consumoMedio')) {
+          <span class="form-error">{{ getError('consumoMedio') }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Quilometragem atual (km)</label>
+      <input class="form-input" type="number"
+             placeholder="Ex: 87430"
+             formControlName="kmAtual">
+      @if (getError('kmAtual')) {
+        <span class="form-error">{{ getError('kmAtual') }}</span>
+      }
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancelar"
+              (click)="backToList()">
+        Cancelar
+      </button>
+      <button type="submit" class="btn-salvar"
+              [disabled]="vehicleForm.invalid">
+        {{ editingId ? 'Salvar alterações' : 'Salvar veículo' }}
+      </button>
+    </div>
+
+  </form>
+
+</div>
+}

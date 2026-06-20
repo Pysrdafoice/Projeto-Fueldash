@@ -1,0 +1,392 @@
+/* vehicles.component.css */
+
+/* ── Container geral ── */
+.vehicles-container {
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Header do painel ── */
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-title h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f1f0ed;
+  margin: 0;
+}
+
+.panel-icon {
+  font-size: 20px;
+}
+
+/* ── Botão novo veículo ── */
+.btn-novo {
+  padding: 8px 16px;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.btn-novo:hover {
+  background: #ea6c0a;
+  transform: translateY(-1px);
+}
+
+/* ── Lista de veículos ── */
+.vehicles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+/* ── Card do veículo ── */
+.vehicle-card {
+  background: #1c2030;
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  transition: border-color 0.2s;
+}
+
+.vehicle-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.vehicle-card.active {
+  border-color: rgba(249, 115, 22, 0.4);
+  background: rgba(249, 115, 22, 0.04);
+}
+
+.vehicle-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.vehicle-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #141720;
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.vehicle-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vehicle-apelido {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #f1f0ed;
+}
+
+.vehicle-detalhe {
+  font-size: 12px;
+  color: #7a7d8a;
+}
+
+.vehicle-placa {
+  font-size: 11px;
+  color: #7a7d8a;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+.badge-ativo {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+  border: 0.5px solid rgba(249, 115, 22, 0.35);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* ── Stats do veículo ── */
+.vehicle-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #7a7d8a;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f1f0ed;
+}
+
+/* ── Ações do card ── */
+.vehicle-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: #7a7d8a;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.btn-action:hover {
+  color: #f1f0ed;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.btn-deletar:hover {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.btn-definir:hover {
+  color: #f97316;
+  border-color: rgba(249, 115, 22, 0.3);
+  background: rgba(249, 115, 22, 0.06);
+}
+
+/* ── Estado vazio ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  gap: 8px;
+}
+
+.empty-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.empty-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f0ed;
+}
+
+.empty-sub {
+  font-size: 13px;
+  color: #7a7d8a;
+  line-height: 1.5;
+  max-width: 260px;
+}
+
+.btn-novo-empty {
+  margin-top: 12px;
+  padding: 10px 20px;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-novo-empty:hover {
+  background: #ea6c0a;
+}
+
+/* ── Formulário ── */
+.vehicle-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+
+.form-section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #7a7d8a;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #7a7d8a;
+  font-weight: 500;
+}
+
+.form-input {
+  background: #1c2030;
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #f1f0ed;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+
+.form-input:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+.form-input::placeholder {
+  color: #4a4d5a;
+}
+
+select.form-input option {
+  background: #1c2030;
+}
+
+/* ── Ações do formulário ── */
+.form-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-cancelar {
+  padding: 11px;
+  background: transparent;
+  color: #7a7d8a;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-cancelar:hover {
+  color: #f1f0ed;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-salvar {
+  padding: 11px;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-salvar:hover {
+  background: #ea6c0a;
+}
+
+/* ── Botão voltar ── */
+.btn-voltar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: #7a7d8a;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.btn-voltar:hover {
+  color: #f1f0ed;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.form-error {
+  font-size: 11px;
+  color: #ef4444;
+  margin-top: 3px;
+}

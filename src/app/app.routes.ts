@@ -23,6 +23,8 @@ export const routes: Routes = [
   // Rotas públicas de autenticação
   { path: 'login', component: LoginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
+  
+
 
   // Rotas protegidas (requerem autenticação via authGuard)
   {
@@ -32,7 +34,6 @@ export const routes: Routes = [
   },
 
   // Rotas futuras do dashboard (protegidas pelo AuthGuard)
-  // { path: 'vehicles', component: VehiclesComponent, canActivate: [authGuard] },
   // { path: 'reports', component: ReportsComponent, canActivate: [authGuard] },
 
   // Rota 404 (catch-all, deve estar sempre por último)

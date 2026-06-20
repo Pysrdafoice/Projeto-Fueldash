@@ -5,10 +5,6 @@ import { LoginRequest } from '../../core/models/user.model';
  * AuthService
  * Gerencia toda a lógica de autenticação da aplicação
  * Responsável por: login, logout, verificação de autenticação e recuperação de senha
- *
- * @Injectable({ providedIn: 'root' })
- * Isso significa que o service é fornecido a nível raiz (singleton)
- * Qualquer componente pode injetar este service sem precisar declarar em um módulo
  */
 @Injectable({
   providedIn: 'root',

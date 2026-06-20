@@ -3,37 +3,57 @@
     <div class="header-content">
       <h1>FuelDash<span class="dot">.</span></h1>
       <div class="user-info">
-        <span *ngIf="userData"
-          >Bem-vindo, <strong>{{ userData.username }}</strong></span
-        >
+
+        @if (userData) {
+          <span>Bem-vindo, <strong>{{ userData.username }}</strong></span>
+        }
+
         <button class="btn-logout" (click)="logout()">Logout</button>
       </div>
+    </div>
+
+    <!-- Veículo ativo -->
+    <div class="active-vehicle">
+      @if (activeVehicle) {
+        <span>🚗 {{ activeVehicle.apelido }} — {{ activeVehicle.modelo }}</span>
+      } @else {
+        <span>Nenhum veículo ativo</span>
+      }
     </div>
   </header>
 
   <main class="dashboard-main">
     <div class="dashboard-grid">
+      <div class="card" (click)="openPanel('vehicles')">
+        <h2>🚗 Veículos</h2>
+        <p>Gerencie seus veículos e rotas</p>
+      </div>
       <div class="card">
         <h2>📊 Relatórios</h2>
         <p>Acompanhe seus gastos com combustível</p>
       </div>
-
-      <div class="card">
-        <h2>🚗 Veículos</h2>
-        <p>Gerencie seus veículos e rotas</p>
-      </div>
-
       <div class="card">
         <h2>💰 Custos</h2>
         <p>Análise de custos de abastecimento</p>
       </div>
-
       <div class="card">
         <h2>📍 Rotas</h2>
         <p>Otimize suas rotas de entrega</p>
       </div>
     </div>
   </main>
+
+  <!-- Overlay -->
+  @if (activePanel !== '') {
+    <div class="overlay" (click)="closePanel()"></div>
+  }
+
+  <!-- Painel lateral de veículos -->
+  @if (activePanel === 'vehicles') {
+    <div class="side-panel">
+      <app-vehicles/> 
+    </div>
+  }
 
   <footer class="dashboard-footer">
     <p>FuelDash © 2026 - Dashboard Inteligente de Gestão de Abastecimento</p>
