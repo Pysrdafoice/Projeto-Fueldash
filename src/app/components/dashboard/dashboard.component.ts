@@ -60,6 +60,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);    // redireciona para login
   }
 
-  openPanel(panel: string): void { this.activePanel = panel; }
-  closePanel(): void             { this.activePanel = '';    }
+openPanel(panel: string): void {
+
+  if (this.activePanel === panel) {
+    this.activePanel = '';
+    return;
+  }
+
+  this.activePanel = panel;
+}  closePanel(): void             { this.activePanel = '';    }
 }
