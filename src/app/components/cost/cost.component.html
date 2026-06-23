@@ -1,0 +1,221 @@
+<!-- ===== MODO LISTA ===== -->
+@if (viewMode === 'list') {
+<div class="costs-container">
+
+  <div class="panel-header">
+    <div class="panel-title">
+      <span class="panel-icon">💰</span>
+      <h2>Custos</h2>
+    </div>
+    <button class="btn-novo" (click)="openForm()">+ Novo registro</button>
+  </div>
+
+  <!-- Posto mais barato — só aparece se houver registros -->
+  @if (cheapestStation) {
+  <div class="cheapest-banner">
+    <div class="cheapest-left">
+      <span class="cheapest-icon">⭐</span>
+      <div>
+        <span class="cheapest-label">Posto mais barato</span>
+        <span class="cheapest-name">{{ cheapestStation }}</span>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Lista com registros -->
+  @if (costs.length > 0) {
+  <div class="costs-list">
+    @for (cost of costs; track cost.id) {
+    <div class="cost-card">
+
+      <div class="cost-card-header">
+        <div class="cost-info">
+          <span class="cost-posto">{{ cost.posto }}</span>
+          <span class="cost-data">{{ formatDate(cost.data) }}</span>
+        </div>
+        <div class="cost-total">R$ {{ cost.totalPago.toFixed(2) }}</div>
+      </div>
+
+      <div class="cost-details">
+        <div class="cost-detail">
+          <span class="detail-label">Preço/L</span>
+          <span class="detail-value">R$ {{ cost.precoPorLitro.toFixed(2) }}</span>
+        </div>
+        <div class="cost-detail">
+          <span class="detail-label">Litros</span>
+          <span class="detail-value">{{ cost.litros }} L</span>
+        </div>
+        <div class="cost-detail">
+          <span class="detail-label">Custo/km</span>
+          <span class="detail-value">R$ {{ cost.custoKm.toFixed(2) }}</span>
+        </div>
+        <div class="cost-detail">
+          <span class="detail-label">Distância</span>
+          <span class="detail-value">{{ cost.kmTotal }} km</span>
+        </div>
+      </div>
+
+      <div class="cost-card-footer">
+        <span class="badge-tipo"
+              [class.badge-ida]="cost.tipoViagem === 'ida'"
+              [class.badge-idavolta]="cost.tipoViagem === 'idavolta'">
+          {{ cost.tipoViagem === 'ida' ? 'Somente ida' : 'Ida e volta' }}
+        </span>
+        <button class="btn-delete" (click)="deleteCost(cost.id)">
+          🗑️ Excluir
+        </button>
+      </div>
+
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Estado vazio -->
+  @if (costs.length === 0) {
+  <div class="empty-state">
+    <div class="empty-icon">⛽</div>
+    <p class="empty-title">Nenhum registro ainda</p>
+    <p class="empty-sub">Registre seu primeiro abastecimento para começar</p>
+    <button class="btn-novo-empty" (click)="openForm()">
+      + Registrar abastecimento
+    </button>
+  </div>
+  }
+
+</div>
+}
+
+<!-- ===== MODO FORMULÁRIO ===== -->
+@if (viewMode === 'form') {
+<div class="costs-container">
+
+  <div class="panel-header">
+    <div class="panel-title">
+      <button class="btn-voltar" (click)="backToList()">←</button>
+      <h2>Novo Registro</h2>
+    </div>
+  </div>
+
+  <!-- Veículo vinculado automaticamente -->
+  @if (activeVehicle) {
+  <div class="vehicle-linked">
+    <span class="vehicle-linked-icon">🚗</span>
+    <div>
+      <span class="vehicle-linked-label">Registrando para</span>
+      <span class="vehicle-linked-name">
+        {{ activeVehicle.marca }} {{ activeVehicle.modelo }} {{ activeVehicle.ano }}
+      </span>
+    </div>
+  </div>
+  }
+
+  <form class="cost-form" [formGroup]="costForm" (ngSubmit)="onSubmit()">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Data</label>
+        <input class="form-input" type="date" formControlName="data">
+        @if (getError('data')) {
+          <span class="form-error">{{ getError('data') }}</span>
+        }
+      </div>
+      <div class="form-group">
+        <label class="form-label">Posto</label>
+        <input class="form-input" type="text"
+               placeholder="Ex: Shell Centro"
+               formControlName="posto">
+        @if (getError('posto')) {
+          <span class="form-error">{{ getError('posto') }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Preço por litro (R$)</label>
+        <input class="form-input" type="number"
+               placeholder="5.49" step="0.01"
+               formControlName="precoPorLitro">
+        @if (getError('precoPorLitro')) {
+          <span class="form-error">{{ getError('precoPorLitro') }}</span>
+        }
+      </div>
+      <div class="form-group">
+        <label class="form-label">Litros abastecidos</label>
+        <input class="form-input" type="number"
+               placeholder="40" step="0.1"
+               formControlName="litros">
+        @if (getError('litros')) {
+          <span class="form-error">{{ getError('litros') }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Km percorrido (ida)</label>
+      <input class="form-input" type="number"
+             placeholder="Ex: 120"
+             formControlName="kmPercorrido">
+      @if (getError('kmPercorrido')) {
+        <span class="form-error">{{ getError('kmPercorrido') }}</span>
+      }
+    </div>
+
+    <!-- Toggle ida / ida e volta -->
+    <div class="form-group">
+      <label class="form-label">Tipo de viagem</label>
+      <div class="toggle-row">
+        <button type="button" class="toggle-btn"
+                [class.active]="tipoViagem === 'ida'"
+                (click)="setTipoViagem('ida')">
+          Somente ida
+        </button>
+        <button type="button" class="toggle-btn"
+                [class.active]="tipoViagem === 'idavolta'"
+                (click)="setTipoViagem('idavolta')">
+          Ida e volta
+        </button>
+      </div>
+    </div>
+
+    <!-- Preview calculado em tempo real -->
+    <div class="calc-preview">
+      <div class="calc-item">
+        <span class="calc-value">
+          {{ previewKmTotal > 0 ? previewKmTotal + ' km' : '— km' }}
+        </span>
+        <span class="calc-label">Distância total</span>
+      </div>
+      <div class="calc-divider"></div>
+      <div class="calc-item">
+        <span class="calc-value">
+          {{ previewTotal > 0 ? 'R$ ' + previewTotal.toFixed(2) : 'R$ —' }}
+        </span>
+        <span class="calc-label">Total pago</span>
+      </div>
+      <div class="calc-divider"></div>
+      <div class="calc-item">
+        <span class="calc-value">
+          {{ previewCustoKm > 0 ? 'R$ ' + previewCustoKm.toFixed(2) + '/km' : 'R$ —/km' }}
+        </span>
+        <span class="calc-label">Custo por km</span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancelar"
+              (click)="backToList()">
+        Cancelar
+      </button>
+      <button type="submit" class="btn-salvar"
+              [disabled]="costForm.invalid">
+        Salvar registro
+      </button>
+    </div>
+
+  </form>
+
+</div>
+}

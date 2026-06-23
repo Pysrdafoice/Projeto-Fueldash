@@ -1,0 +1,516 @@
+/* costs.component.css */
+
+/* ── Container ── */
+.costs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+/* ── Header ── */
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-title h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f1f0ed;
+  margin: 0;
+}
+
+.panel-icon { font-size: 20px; }
+
+/* ── Botão novo ── */
+.btn-novo {
+  padding: 8px 16px;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.btn-novo:hover {
+  background: #ea6c0a;
+  transform: translateY(-1px);
+}
+
+/* ── Banner posto mais barato ── */
+.cheapest-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(249, 115, 22, 0.06);
+  border: 0.5px solid rgba(249, 115, 22, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.cheapest-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cheapest-icon { font-size: 18px; }
+
+.cheapest-label {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #7a7d8a;
+  font-weight: 500;
+}
+
+.cheapest-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f1f0ed;
+  font-family: 'Syne', sans-serif;
+}
+
+.cheapest-price {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f97316;
+}
+
+/* ── Lista de registros ── */
+.costs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+/* ── Card de registro ── */
+.cost-card {
+  background: #1c2030;
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  transition: border-color 0.2s;
+}
+
+.cost-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.cost-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.cost-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cost-posto {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f1f0ed;
+}
+
+.cost-data {
+  font-size: 11px;
+  color: #7a7d8a;
+}
+
+.cost-total {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f97316;
+}
+
+/* ── Detalhes do card ── */
+.cost-details {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.cost-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detail-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #7a7d8a;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #f1f0ed;
+}
+
+/* ── Footer do card ── */
+.cost-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badge-tipo {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.badge-ida {
+  background: rgba(96, 165, 250, 0.12);
+  color: #60a5fa;
+  border: 0.5px solid rgba(96, 165, 250, 0.3);
+}
+
+.badge-idavolta {
+  background: rgba(249, 115, 22, 0.12);
+  color: #f97316;
+  border: 0.5px solid rgba(249, 115, 22, 0.3);
+}
+
+.btn-delete {
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: #7a7d8a;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+
+.btn-delete:hover {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.06);
+}
+
+/* ── Estado vazio ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  gap: 8px;
+}
+
+.empty-icon { font-size: 40px; margin-bottom: 8px; }
+
+.empty-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f0ed;
+}
+
+.empty-sub {
+  font-size: 13px;
+  color: #7a7d8a;
+  line-height: 1.5;
+  max-width: 260px;
+}
+
+.btn-novo-empty {
+  margin-top: 12px;
+  padding: 10px 20px;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-novo-empty:hover { background: #ea6c0a; }
+
+/* ── Veículo vinculado ── */
+.vehicle-linked {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.vehicle-linked-icon { font-size: 20px; }
+
+.vehicle-linked-label {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #7a7d8a;
+  font-weight: 500;
+}
+
+.vehicle-linked-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f1f0ed;
+  font-family: 'Syne', sans-serif;
+}
+
+/* ── Formulário ── */
+.cost-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #7a7d8a;
+  font-weight: 500;
+}
+
+.form-input {
+  background: #1c2030;
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #f1f0ed;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+
+.form-input:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+.form-input::placeholder { color: #4a4d5a; }
+
+/* ── Toggle ida / ida e volta ── */
+.toggle-row {
+  display: flex;
+  background: #1c2030;
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 8px;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  color: #7a7d8a;
+  border: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.toggle-btn.active {
+  background: #f97316;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}
+
+/* ── Preview calculado ── */
+.calc-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(249, 115, 22, 0.05);
+  border: 0.5px solid rgba(249, 115, 22, 0.25);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.calc-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.calc-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f97316;
+}
+
+.calc-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #7a7d8a;
+  font-weight: 500;
+}
+
+.calc-divider {
+  width: 0.5px;
+  height: 32px;
+  background: rgba(249, 115, 22, 0.2);
+}
+
+/* ── Ações do formulário ── */
+.form-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+  margin-top: 4px;
+}
+
+.btn-cancelar {
+  padding: 11px;
+  background: transparent;
+  color: #7a7d8a;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-cancelar:hover {
+  color: #f1f0ed;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-salvar {
+  padding: 11px;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-salvar:hover { background: #ea6c0a; }
+.btn-salvar:disabled {
+  background: #2a2d3a;
+  color: #4a4d5a;
+  cursor: not-allowed;
+}
+
+/* ── Botão voltar ── */
+.btn-voltar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: #7a7d8a;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.btn-voltar:hover {
+  color: #f1f0ed;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ── Erro de campo ── */
+.form-error {
+  font-size: 11px;
+  color: #ef4444;
+  margin-top: 3px;
+}
+
+/* ── Responsivo mobile ── */
+@media (max-width: 480px) {
+  .cost-details {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .calc-preview {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .calc-divider {
+    width: 100%;
+    height: 0.5px;
+  }
+}

@@ -8,11 +8,12 @@ import { VehicleService } from '../../auth/services/vehicle.service';
 import { AuthService }    from '../../auth/services/auth.service';
 import { Vehicle }        from '../../core/models/vehicle_models';
 import { VehiclesComponent } from '../vehicles/vehicles.component';
+import { CostsComponent } from "../cost/cost.component";
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule,  VehiclesComponent],
+  imports: [CommonModule, VehiclesComponent, CostsComponent],
   templateUrl: 'dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })

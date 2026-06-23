@@ -20,25 +20,27 @@
         <span>Nenhum veículo ativo</span>
       }
     </div>
+
+   
   </header>
 
   <main class="dashboard-main">
     <div class="dashboard-grid">
       <div class="card" (click)="openPanel('vehicles')">
         <h2>🚗 Veículos</h2>
-        <p>Gerencie seus veículos e rotas</p>
+        <p>Cadastre seus veículos</p>
       </div>
       <div class="card">
         <h2>📊 Relatórios</h2>
-        <p>Acompanhe seus gastos com combustível</p>
+        <p>Acompanhe os indicadores dos gastos e consumo de forma visual</p>
       </div>
-      <div class="card">
+      <div class="card" (click)="openPanel('costs')">
         <h2>💰 Custos</h2>
-        <p>Análise de custos de abastecimento</p>
+        <p>Registre seus custos de abastecimento</p>
       </div>
       <div class="card">
         <h2>📍 Rotas</h2>
-        <p>Otimize suas rotas de entrega</p>
+        <p>Informe suas rotas de abastecimento</p>
       </div>
     </div>
   </main>
@@ -48,12 +50,25 @@
     <div class="overlay" (click)="closePanel()"></div>
   }
 
-  <!-- Painel lateral de veículos -->
-  @if (activePanel === 'vehicles') {
-    <div class="side-panel">
-      <app-vehicles/> 
-    </div>
-  }
+<!-- Painel lateral de veículos -->
+@if (activePanel === 'vehicles') {
+  <div class="side-panel">
+    <button class="btn-close-panel" (click)="closePanel()">
+      ← Voltar
+    </button>
+    <app-vehicles/>
+  </div>
+}
+
+<!-- Painel lateral de custos -->
+@if (activePanel === 'costs') {
+  <div class="side-panel">
+    <button class="btn-close-panel" (click)="closePanel()">
+      ← Voltar
+    </button>
+    <app-costs />
+  </div>
+}
 
   <footer class="dashboard-footer">
     <p>FuelDash © 2026 - Dashboard Inteligente de Gestão de Abastecimento</p>
