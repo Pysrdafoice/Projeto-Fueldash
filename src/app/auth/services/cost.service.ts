@@ -16,48 +16,62 @@ export class CostService {
 
   costs$ = this.costsSubject.asObservable();
 
-  // ── Injeta VehicleService ──
   constructor(private vehicleService: VehicleService) {}
 
-  save(cost: FuelCost): void {
-    const list = this.costsSubject.getValue();
+  // ── Getter privado interno ──
+  private get records(): FuelCost[] {
+    return this.costsSubject.getValue();
+  }
 
-    cost.id        = Date.now().toString();
+  // ── Método público para componentes e outros serviços ──
+  getAll(): FuelCost[] {
+    return this.costsSubject.getValue();
+  }
+
+  // ────────────────────────────────────────
+  // CRUD
+  // ────────────────────────────────────────
+
+  save(cost: FuelCost): void {
+    cost.id        = crypto.randomUUID();  // ← mais seguro que Date.now()
     cost.createdAt = new Date().toISOString();
 
-    const updated = [cost, ...list];
+    const updated = [cost, ...this.records];
     this.persist(updated);
 
-    // ── Atualiza hodômetro do veículo automaticamente ──
-    const novoKm = cost.kmPercorrido > 0
-      ? this.getKmAtualDoVeiculo(cost.vehicleId) + cost.kmTotal
-      : 0;
+    // Atualiza hodômetro do veículo automaticamente
+    const kmAtualVeiculo = this.getKmAtualDoVeiculo(cost.vehicleId);
+    const novoKm = kmAtualVeiculo + cost.kmTotal;
 
     if (novoKm > 0) {
       this.vehicleService.updateKm(cost.vehicleId, novoKm);
     }
   }
 
-  // Retorna o kmAtual atual do veículo para somar a distância
-  private getKmAtualDoVeiculo(vehicleId: string): number {
-    const vehicles = this.vehicleService['vehiclesSubject'].getValue();
-    const vehicle  = vehicles.find(v => v.id === vehicleId);
-    return vehicle ? vehicle.kmAtual : 0;
-  }
-
   delete(id: string): void {
-    const updated = this.costsSubject.getValue()
-      .filter(c => c.id !== id);
+    const updated = this.records.filter(c => c.id !== id);
     this.persist(updated);
   }
 
+  // ────────────────────────────────────────
+  // FILTROS E CÁLCULOS
+  // ────────────────────────────────────────
+
   getByVehicle(vehicleId: string): FuelCost[] {
-    return this.costsSubject.getValue()
-      .filter(c => c.vehicleId === vehicleId);
+    return this.records.filter(c => c.vehicleId === vehicleId);
   }
 
   getRecent(vehicleId: string, limit = 5): FuelCost[] {
     return this.getByVehicle(vehicleId).slice(0, limit);
+  }
+
+  // Retorna lista de postos únicos usados por um veículo
+  getPostosRecentes(vehicleId: string): string[] {
+    return [...new Set(
+      this.getByVehicle(vehicleId)
+        .map(c => c.posto)
+        .filter(Boolean)
+    )];
   }
 
   getCheapestStation(vehicleId: string): string | null {
@@ -97,6 +111,17 @@ export class CostService {
   getTotalSpent(vehicleId: string): number {
     return this.getByVehicle(vehicleId)
       .reduce((sum, c) => sum + c.totalPago, 0);
+  }
+
+  // ────────────────────────────────────────
+  // HELPERS PRIVADOS
+  // ────────────────────────────────────────
+
+  private getKmAtualDoVeiculo(vehicleId: string): number {
+    const vehicle = this.vehicleService
+      .getAll()  // ← método público, sem acesso a propriedade privada
+      .find(v => v.id === vehicleId);
+    return vehicle ? vehicle.kmAtual : 0;
   }
 
   private persist(list: FuelCost[]): void {

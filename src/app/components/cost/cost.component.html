@@ -10,7 +10,6 @@
     <button class="btn-novo" (click)="openForm()">+ Novo registro</button>
   </div>
 
-  <!-- Posto mais barato — só aparece se houver registros -->
   @if (cheapestStation) {
   <div class="cheapest-banner">
     <div class="cheapest-left">
@@ -23,7 +22,6 @@
   </div>
   }
 
-  <!-- Lista com registros -->
   @if (costs.length > 0) {
   <div class="costs-list">
     @for (cost of costs; track cost.id) {
@@ -38,6 +36,10 @@
       </div>
 
       <div class="cost-details">
+        <div class="cost-detail">
+          <span class="detail-label">Combustível</span>
+          <span class="detail-value">{{ cost.tipoCombustivel | titlecase }}</span>
+        </div>
         <div class="cost-detail">
           <span class="detail-label">Preço/L</span>
           <span class="detail-value">R$ {{ cost.precoPorLitro.toFixed(2) }}</span>
@@ -72,7 +74,6 @@
   </div>
   }
 
-  <!-- Estado vazio -->
   @if (costs.length === 0) {
   <div class="empty-state">
     <div class="empty-icon">⛽</div>
@@ -98,7 +99,6 @@
     </div>
   </div>
 
-  <!-- Veículo vinculado automaticamente -->
   @if (activeVehicle) {
   <div class="vehicle-linked">
     <span class="vehicle-linked-icon">🚗</span>
@@ -113,25 +113,56 @@
 
   <form class="cost-form" [formGroup]="costForm" (ngSubmit)="onSubmit()">
 
+    <!-- ── Data e Posto ── -->
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Data</label>
-        <input class="form-input" type="date" formControlName="data">
+        <input class="form-input" type="date"
+               formControlName="data">
         @if (getError('data')) {
           <span class="form-error">{{ getError('data') }}</span>
         }
       </div>
       <div class="form-group">
         <label class="form-label">Posto</label>
+        <!-- Input com datalist para sugerir postos já usados -->
         <input class="form-input" type="text"
                placeholder="Ex: Shell Centro"
-               formControlName="posto">
+               formControlName="posto"
+               list="postos-list"
+               style="text-transform: capitalize">
+        <datalist id="postos-list">
+          @for (posto of postosRecentes; track posto) {
+            <option [value]="posto">{{ posto }}</option>
+          }
+        </datalist>
         @if (getError('posto')) {
           <span class="form-error">{{ getError('posto') }}</span>
         }
       </div>
     </div>
 
+    <!-- ── Combustível ── -->
+    <div class="form-group">
+      <label class="form-label">Combustível abastecido</label>
+      <select class="form-input" formControlName="tipoCombustivel">
+        <option value="">Selecione</option>
+        @if (activeVehicle?.combustivel === 'flex' ||
+             activeVehicle?.combustivel === 'hibrido') {
+          <option value="gasolina">Gasolina</option>
+          <option value="etanol">Etanol</option>
+        } @else {
+          <option [value]="activeVehicle?.combustivel">
+            {{ activeVehicle?.combustivel | titlecase }}
+          </option>
+        }
+      </select>
+      @if (getError('tipoCombustivel')) {
+        <span class="form-error">{{ getError('tipoCombustivel') }}</span>
+      }
+    </div>
+
+    <!-- ── Preço e Litros ── -->
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Preço por litro (R$)</label>
@@ -153,6 +184,7 @@
       </div>
     </div>
 
+    <!-- ── Km percorrido ── -->
     <div class="form-group">
       <label class="form-label">Km percorrido (ida)</label>
       <input class="form-input" type="number"
@@ -163,7 +195,7 @@
       }
     </div>
 
-    <!-- Toggle ida / ida e volta -->
+    <!-- ── Toggle ida / ida e volta ── -->
     <div class="form-group">
       <label class="form-label">Tipo de viagem</label>
       <div class="toggle-row">
@@ -180,7 +212,7 @@
       </div>
     </div>
 
-    <!-- Preview calculado em tempo real -->
+    <!-- ── Preview calculado em tempo real ── -->
     <div class="calc-preview">
       <div class="calc-item">
         <span class="calc-value">
@@ -205,8 +237,7 @@
     </div>
 
     <div class="form-actions">
-      <button type="button" class="btn-cancelar"
-              (click)="backToList()">
+      <button type="button" class="btn-cancelar" (click)="backToList()">
         Cancelar
       </button>
       <button type="submit" class="btn-salvar"

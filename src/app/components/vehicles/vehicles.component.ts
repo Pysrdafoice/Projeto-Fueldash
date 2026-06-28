@@ -4,8 +4,10 @@ import { ReactiveFormsModule, FormBuilder,
          FormGroup, Validators }         from '@angular/forms';
 import { Subject }                       from 'rxjs';
 import { takeUntil }                     from 'rxjs/operators';
-import { Vehicle }        from '../../core/models/vehicle_models';
+import { Vehicle, TipoCombustivel }        from '../../core/models/vehicle_models';
 import { VehicleService } from '../../auth/services/vehicle.service';
+// src/app/components/vehicles/vehicles.component.ts
+
 
 @Component({
   selector: 'app-vehicles',
@@ -16,58 +18,93 @@ import { VehicleService } from '../../auth/services/vehicle.service';
 })
 export class VehiclesComponent implements OnInit, OnDestroy {
 
-  // ── Estado da tela ──
-  viewMode: 'list' | 'form' = 'list';
+  viewMode:  'list' | 'form' = 'list';
   editingId: string | null = null;
+  vehicles:  Vehicle[] = [];
+  activeId:  string | null = null;
 
-  // ── Dados ──
-  vehicles: Vehicle[] = [];
-  activeId: string | null = null;
-
-  // ── Formulário ──
   vehicleForm!: FormGroup;
 
-  // ── Controle de inscrições ──────────────────────────────
-  // Subject usado para cancelar todos os subscribes quando
-  // o componente for destruído — evita memory leak
+  // Controla quais campos extras mostrar
+  isFlex:    boolean = false;
+  isHibrido: boolean = false;
+
   private destroy$ = new Subject<void>();
 
   constructor(
-    private fb: FormBuilder,
+    private fb:             FormBuilder,
     private vehicleService: VehicleService
   ) {}
 
   ngOnInit(): void {
     this.buildForm();
-    this.subscribeToData(); // ← substitui o loadVehicles()
+    this.subscribeToData();
+    this.listenToCombustivel();
   }
 
-  // ── Cancela todas as inscrições ao destruir o componente ──
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   // ────────────────────────────────────────
-  // INSCRIÇÕES NOS OBSERVABLES
+  // INSCRIÇÕES
   // ────────────────────────────────────────
 
   private subscribeToData(): void {
-
-    // Toda vez que a lista de veículos mudar, atualiza automaticamente
     this.vehicleService.vehicles$
-      .pipe(takeUntil(this.destroy$)) // cancela quando componente destruído
-      .subscribe(vehicles => {
-        this.vehicles = vehicles;
-        console.log('🚗 Lista de veículos atualizada:', vehicles.length);
-      });
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(v => this.vehicles = v);
 
-    // Toda vez que o veículo ativo mudar, atualiza automaticamente
     this.vehicleService.activeId$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(id => {
-        this.activeId = id;
+      .subscribe(id => this.activeId = id);
+  }
+
+  // Escuta mudança no campo combustível para mostrar/ocultar campos extras
+  private listenToCombustivel(): void {
+    this.vehicleForm.get('combustivel')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((valor: TipoCombustivel) => {
+        this.isFlex    = valor === 'flex';
+        this.isHibrido = valor === 'hibrido';
+        this.ajustarValidators(valor);
       });
+  }
+
+  // Adiciona ou remove validators conforme o tipo de combustível
+  private ajustarValidators(tipo: TipoCombustivel): void {
+    const campos = [
+      'consumoMedioGasolina',
+      'consumoMedioEtanol',
+      'autonomiaEletrica',
+      'consumoCombustivel'
+    ];
+
+    // Remove todos os validators extras primeiro
+    campos.forEach(campo => {
+      this.vehicleForm.get(campo)?.clearValidators();
+      this.vehicleForm.get(campo)?.updateValueAndValidity();
+    });
+
+    // Adiciona os validators corretos
+    if (tipo === 'flex') {
+      this.vehicleForm.get('consumoMedioGasolina')
+        ?.setValidators([Validators.required, Validators.min(0.1)]);
+      this.vehicleForm.get('consumoMedioEtanol')
+        ?.setValidators([Validators.required, Validators.min(0.1)]);
+      this.vehicleForm.get('consumoMedioGasolina')?.updateValueAndValidity();
+      this.vehicleForm.get('consumoMedioEtanol')?.updateValueAndValidity();
+    }
+
+    if (tipo === 'hibrido') {
+      this.vehicleForm.get('autonomiaEletrica')
+        ?.setValidators([Validators.required, Validators.min(1)]);
+      this.vehicleForm.get('consumoCombustivel')
+        ?.setValidators([Validators.required, Validators.min(0.1)]);
+      this.vehicleForm.get('autonomiaEletrica')?.updateValueAndValidity();
+      this.vehicleForm.get('consumoCombustivel')?.updateValueAndValidity();
+    }
   }
 
   // ────────────────────────────────────────
@@ -75,39 +112,56 @@ export class VehiclesComponent implements OnInit, OnDestroy {
   // ────────────────────────────────────────
 
   private buildForm(): void {
-  this.vehicleForm = this.fb.group({
-    apelido:               ['', Validators.required],
-    marca:                 ['', Validators.required],
-    modelo:                ['', Validators.required],
-    ano:                   ['', [Validators.required, Validators.min(1900)]],
-    placa:                 ['', Validators.required],
-    combustivel:           ['', Validators.required],
-    consumoMedio:          ['', [Validators.required, Validators.min(0.1)]],
-    kmAtual:               ['', [Validators.required, Validators.min(0)]],
+    this.vehicleForm = this.fb.group({
+      // Campos base
+      apelido:               ['', Validators.required],
+      marca:                 ['', Validators.required],
+      modelo:                ['', Validators.required],
+      ano:                   ['', [Validators.required, Validators.min(1900)]],
+      placa:                 ['', Validators.required],
+      combustivel:           ['', Validators.required],
+      consumoMedio:          ['', [Validators.required, Validators.min(0.1)]],
+      capacidadeTanque:      ['', [Validators.required, Validators.min(1)]],
+      kmAtual:               ['', [Validators.required, Validators.min(0)]],
+      kmUltimoAbastecimento: [0],
 
-    // ── Campos novos ──
-    capacidadeTanque:      ['', [Validators.required, Validators.min(1)]],
-    kmUltimoAbastecimento: [0]  // começa com 0, atualizado automaticamente pelo sistema
-  });
-}
+      // Campos Flex (opcionais por padrão)
+      consumoMedioGasolina:  [null],
+      consumoMedioEtanol:    [null],
+      combustivelAtual:      [null],
+
+      // Campos Híbrido (opcionais por padrão)
+      autonomiaEletrica:     [null],
+      consumoCombustivel:    [null],
+    });
+  }
+
   // ────────────────────────────────────────
-  // NAVEGAÇÃO ENTRE TELAS
+  // NAVEGAÇÃO
   // ────────────────────────────────────────
 
   openForm(vehicle?: Vehicle): void {
     this.vehicleForm.reset();
+    this.isFlex    = false;
+    this.isHibrido = false;
+
     if (vehicle) {
       this.editingId = vehicle.id;
       this.vehicleForm.patchValue(vehicle);
+      this.isFlex    = vehicle.combustivel === 'flex';
+      this.isHibrido = vehicle.combustivel === 'hibrido';
     } else {
       this.editingId = null;
     }
+
     this.viewMode = 'form';
   }
 
   backToList(): void {
-    this.viewMode = 'list';
+    this.viewMode  = 'list';
     this.editingId = null;
+    this.isFlex    = false;
+    this.isHibrido = false;
     this.vehicleForm.reset();
   }
 
@@ -129,8 +183,6 @@ export class VehiclesComponent implements OnInit, OnDestroy {
       this.vehicleService.save({ ...formValue, id: '' });
     }
 
-    // Não precisa mais chamar loadVehicles()!
-    // O subscribe já atualiza a lista automaticamente
     this.backToList();
   }
 
@@ -140,19 +192,12 @@ export class VehiclesComponent implements OnInit, OnDestroy {
 
   setActive(id: string): void {
     this.vehicleService.setActive(id);
-    // Não precisa atualizar activeId manualmente!
-    // O subscribe do activeId$ já faz isso
   }
 
   deleteVehicle(id: string): void {
     if (!confirm('Tem certeza que deseja excluir este veículo?')) return;
     this.vehicleService.delete(id);
-    // Não precisa mais chamar loadVehicles()!
   }
-
-  // ────────────────────────────────────────
-  // HELPERS
-  // ────────────────────────────────────────
 
   isActive(id: string): boolean {
     return this.activeId === id;

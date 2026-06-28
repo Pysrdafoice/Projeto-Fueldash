@@ -1,5 +1,3 @@
-<!-- vehicles.component.html -->
-
 <!-- ===== MODO LISTA ===== -->
 @if (viewMode === 'list') {
 <div class="vehicles-container">
@@ -9,12 +7,9 @@
       <span class="panel-icon">🚗</span>
       <h2>Meus Veículos</h2>
     </div>
-    <button class="btn-novo" (click)="openForm()">
-      + Novo veículo
-    </button>
+    <button class="btn-novo" (click)="openForm()">+ Novo veículo</button>
   </div>
 
-  <!-- Lista com veículos -->
   @if (vehicles.length > 0) {
   <div class="vehicles-list">
     @for (vehicle of vehicles; track vehicle.id) {
@@ -25,9 +20,9 @@
         <div class="vehicle-info">
           <span class="vehicle-apelido">{{ vehicle.apelido }}</span>
           <span class="vehicle-detalhe">
-            {{ vehicle.marca }} {{ vehicle.modelo }} · {{ vehicle.ano }} · {{ vehicle.combustivel }}
+            {{ vehicle.marca }} {{ vehicle.modelo }} · {{ vehicle.ano }} · {{ vehicle.combustivel | titlecase }}
           </span>
-          <span class="vehicle-placa">{{ vehicle.placa }}</span>
+          <span class="vehicle-placa">{{ vehicle.placa | uppercase }}</span>
         </div>
         @if (isActive(vehicle.id)) {
           <span class="badge-ativo">Ativo</span>
@@ -37,15 +32,23 @@
       <div class="vehicle-card-stats">
         <div class="stat">
           <span class="stat-label">Consumo médio</span>
-          <span class="stat-value">{{ vehicle.consumoMedio }} km/L</span>
+          <span class="stat-value">
+            @if (vehicle.combustivel === 'flex') {
+              G: {{ vehicle.consumoMedioGasolina }} · E: {{ vehicle.consumoMedioEtanol }} km/L
+            } @else if (vehicle.combustivel === 'hibrido') {
+              {{ vehicle.consumoCombustivel }} km/L + {{ vehicle.autonomiaEletrica }}km elétrico
+            } @else {
+              {{ vehicle.consumoMedio }} km/L
+            }
+          </span>
         </div>
         <div class="stat">
           <span class="stat-label">Km atual</span>
           <span class="stat-value">{{ vehicle.kmAtual | number }} km</span>
         </div>
         <div class="stat">
-          <span class="stat-label">Combustível</span>
-          <span class="stat-value">{{ vehicle.combustivel }}</span>
+          <span class="stat-label">Tanque</span>
+          <span class="stat-value">{{ vehicle.capacidadeTanque }} L</span>
         </div>
       </div>
 
@@ -56,12 +59,10 @@
             ⭐ Definir como ativo
           </button>
         }
-        <button class="btn-action btn-editar"
-                (click)="openForm(vehicle)">
+        <button class="btn-action btn-editar" (click)="openForm(vehicle)">
           ✏️ Editar
         </button>
-        <button class="btn-action btn-deletar"
-                (click)="deleteVehicle(vehicle.id)">
+        <button class="btn-action btn-deletar" (click)="deleteVehicle(vehicle.id)">
           🗑️ Excluir
         </button>
       </div>
@@ -71,15 +72,12 @@
   </div>
   }
 
-  <!-- Estado vazio -->
   @if (vehicles.length === 0) {
   <div class="empty-state">
     <div class="empty-icon">🚘</div>
     <p class="empty-title">Nenhum veículo cadastrado</p>
     <p class="empty-sub">Adicione seu primeiro veículo para começar</p>
-    <button class="btn-novo-empty" (click)="openForm()">
-      + Adicionar veículo
-    </button>
+    <button class="btn-novo-empty" (click)="openForm()">+ Adicionar veículo</button>
   </div>
   }
 
@@ -105,7 +103,8 @@
       <label class="form-label">Apelido do veículo</label>
       <input class="form-input" type="text"
              placeholder="Ex: Meu Civic"
-             formControlName="apelido">
+             formControlName="apelido"
+             style="text-transform: capitalize">
       @if (getError('apelido')) {
         <span class="form-error">{{ getError('apelido') }}</span>
       }
@@ -116,7 +115,8 @@
         <label class="form-label">Marca</label>
         <input class="form-input" type="text"
                placeholder="Ex: Honda"
-               formControlName="marca">
+               formControlName="marca"
+               style="text-transform: capitalize">
         @if (getError('marca')) {
           <span class="form-error">{{ getError('marca') }}</span>
         }
@@ -125,7 +125,8 @@
         <label class="form-label">Modelo</label>
         <input class="form-input" type="text"
                placeholder="Ex: Civic"
-               formControlName="modelo">
+               formControlName="modelo"
+               style="text-transform: capitalize">
         @if (getError('modelo')) {
           <span class="form-error">{{ getError('modelo') }}</span>
         }
@@ -146,7 +147,8 @@
         <label class="form-label">Placa</label>
         <input class="form-input" type="text"
                placeholder="Ex: ABC-1234"
-               formControlName="placa">
+               formControlName="placa"
+               style="text-transform: uppercase">
         @if (getError('placa')) {
           <span class="form-error">{{ getError('placa') }}</span>
         }
@@ -155,70 +157,128 @@
 
     <div class="form-section-label">Dados técnicos</div>
 
+    <div class="form-group">
+      <label class="form-label">Tipo de combustível</label>
+      <select class="form-input" formControlName="combustivel">
+        <option value="">Selecione</option>
+        <option value="flex">Flex</option>
+        <option value="gasolina">Gasolina</option>
+        <option value="etanol">Etanol</option>
+        <option value="diesel">Diesel</option>
+        <option value="hibrido">Híbrido</option>
+        <option value="eletrico">Elétrico</option>
+      </select>
+      @if (getError('combustivel')) {
+        <span class="form-error">{{ getError('combustivel') }}</span>
+      }
+    </div>
+
+    <!-- Campos padrão de consumo (não Flex, não Híbrido) -->
+    @if (!isFlex && !isHibrido) {
+    <div class="form-group">
+      <label class="form-label">Consumo médio (km/L)</label>
+      <input class="form-input" type="number"
+             placeholder="Ex: 11.4" step="0.1"
+             formControlName="consumoMedio">
+      @if (getError('consumoMedio')) {
+        <span class="form-error">{{ getError('consumoMedio') }}</span>
+      }
+    </div>
+    }
+
+    <!-- Campos exclusivos para Flex -->
+    @if (isFlex) {
+    <div class="aviso-simulacao">
+      <i class="ti ti-info-circle" aria-hidden="true"></i>
+      <div>
+        <strong>Simulação de consumo — Flex</strong>
+        <p>Por limitações técnicas, o sistema não tem acesso aos dados reais do veículo. Os cálculos são estimativas baseadas nos valores informados abaixo.</p>
+      </div>
+    </div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Combustível</label>
-        <select class="form-input" formControlName="combustivel">
-          <option value="">Selecione</option>
-          <option>Flex</option>
-          <option>Gasolina</option>
-          <option>Etanol</option>
-          <option>Diesel</option>
-          <option>Elétrico</option>
-        </select>
-        @if (getError('combustivel')) {
-          <span class="form-error">{{ getError('combustivel') }}</span>
+        <label class="form-label">Consumo médio — Gasolina (km/L)</label>
+        <input class="form-input" type="number"
+               placeholder="Ex: 12.0" step="0.1"
+               formControlName="consumoMedioGasolina">
+        @if (getError('consumoMedioGasolina')) {
+          <span class="form-error">{{ getError('consumoMedioGasolina') }}</span>
         }
       </div>
       <div class="form-group">
-        <label class="form-label">Consumo médio (km/L)</label>
+        <label class="form-label">Consumo médio — Etanol (km/L)</label>
         <input class="form-input" type="number"
-               placeholder="Ex: 11.4" step="0.1"
-               formControlName="consumoMedio">
-        @if (getError('consumoMedio')) {
-          <span class="form-error">{{ getError('consumoMedio') }}</span>
+               placeholder="Ex: 8.5" step="0.1"
+               formControlName="consumoMedioEtanol">
+        @if (getError('consumoMedioEtanol')) {
+          <span class="form-error">{{ getError('consumoMedioEtanol') }}</span>
+        }
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Combustível atual no tanque</label>
+      <select class="form-input" formControlName="combustivelAtual">
+        <option value="">Selecione</option>
+        <option value="gasolina">Gasolina</option>
+        <option value="etanol">Etanol</option>
+      </select>
+    </div>
+    }
+
+    <!-- Campos exclusivos para Híbrido -->
+    @if (isHibrido) {
+    <div class="aviso-simulacao">
+      <i class="ti ti-info-circle" aria-hidden="true"></i>
+      <div>
+        <strong>Simulação de consumo — Híbrido</strong>
+        <p>Por limitações técnicas, o sistema não tem acesso aos dados reais do veículo. Use os valores declarados pelo fabricante no manual do veículo. Os cálculos são estimativas simuladas.</p>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Autonomia elétrica (km)</label>
+        <input class="form-input" type="number"
+               placeholder="Ex: 60" step="1"
+               formControlName="autonomiaEletrica">
+        @if (getError('autonomiaEletrica')) {
+          <span class="form-error">{{ getError('autonomiaEletrica') }}</span>
+        }
+      </div>
+      <div class="form-group">
+        <label class="form-label">Consumo motor combustível (km/L)</label>
+        <input class="form-input" type="number"
+               placeholder="Ex: 14.0" step="0.1"
+               formControlName="consumoCombustivel">
+        @if (getError('consumoCombustivel')) {
+          <span class="form-error">{{ getError('consumoCombustivel') }}</span>
+        }
+      </div>
+    </div>
+    }
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Capacidade do tanque (L)</label>
+        <input class="form-input" type="number"
+               placeholder="Ex: 50" step="0.5"
+               formControlName="capacidadeTanque">
+        @if (getError('capacidadeTanque')) {
+          <span class="form-error">{{ getError('capacidadeTanque') }}</span>
+        }
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quilometragem atual (km)</label>
+        <input class="form-input" type="number"
+               placeholder="Ex: 87430"
+               formControlName="kmAtual">
+        @if (getError('kmAtual')) {
+          <span class="form-error">{{ getError('kmAtual') }}</span>
         }
       </div>
     </div>
 
-    <div class="form-group">
-  <label class="form-label">Quilometragem atual (km)</label>
-  <input class="form-input" type="number"
-         placeholder="Ex: 87430"
-         formControlName="kmAtual">
-  @if (getError('kmAtual')) {
-    <span class="form-error">{{ getError('kmAtual') }}</span>
-  }
-</div>
-
-<!-- ── Campos novos ── -->
-<div class="form-row">
-  <div class="form-group">
-    <label class="form-label">Capacidade do tanque (L)</label>
-    <input class="form-input" type="number"
-           placeholder="Ex: 50"
-           step="0.5"
-           formControlName="capacidadeTanque">
-    @if (getError('capacidadeTanque')) {
-      <span class="form-error">{{ getError('capacidadeTanque') }}</span>
-    }
-  </div>
-  <div class="form-group">
-    <label class="form-label">Km no último abastecimento</label>
-    <input class="form-input" type="number"
-           placeholder="Preenchido automaticamente"
-           formControlName="kmUltimoAbastecimento"
-           [attr.readonly]="true"
-           style="opacity: 0.5; cursor: not-allowed;">
-    <span style="font-size:11px; color:#7a7d8a; margin-top:3px">
-      Atualizado automaticamente a cada abastecimento
-    </span>
-  </div>
-</div>
-
     <div class="form-actions">
-      <button type="button" class="btn-cancelar"
-              (click)="backToList()">
+      <button type="button" class="btn-cancelar" (click)="backToList()">
         Cancelar
       </button>
       <button type="submit" class="btn-salvar"
@@ -230,4 +290,4 @@
   </form>
 
 </div>
-}
+} 

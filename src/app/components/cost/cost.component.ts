@@ -26,13 +26,14 @@ export class CostsComponent implements OnInit, OnDestroy {
   viewMode: 'list' | 'form' = 'list';
 
   // ── Dados ──
-  costs:          FuelCost[] = [];
-  activeVehicle:  Vehicle | null = null;
+  costs:           FuelCost[] = [];
+  activeVehicle:   Vehicle | null = null;
   cheapestStation: string | null = null;
+  postosRecentes:  string[] = [];  // ← propriedade da classe, não do método
 
   // ── Formulário ──
-  costForm!:    FormGroup;
-  tipoViagem:   'ida' | 'idavolta' = 'ida';
+  costForm!:      FormGroup;
+  tipoViagem:     'ida' | 'idavolta' = 'ida';
 
   // ── Preview calculado em tempo real ──
   previewKmTotal:  number = 0;
@@ -50,7 +51,8 @@ export class CostsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.buildForm();
-    this.subscribeToData();
+    this.subscribeToVehicle();
+    this.subscribeToCosts();
     this.listenToFormChanges();
   }
 
@@ -60,28 +62,10 @@ export class CostsComponent implements OnInit, OnDestroy {
   }
 
   // ────────────────────────────────────────
-  // INSCRIÇÕES NOS OBSERVABLES
+  // INSCRIÇÕES
   // ────────────────────────────────────────
 
-  private subscribeToData(): void {
-
-    // Escuta lista de custos em tempo real
-    this.costService.costs$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(costs => {
-        // Filtra apenas os registros do veículo ativo
-        if (this.activeVehicle) {
-          this.costs = costs.filter(
-            c => c.vehicleId === this.activeVehicle!.id
-          );
-          this.cheapestStation = this.costService
-            .getCheapestStation(this.activeVehicle.id);
-        } else {
-          this.costs = costs;
-        }
-      });
-
-    // Escuta veículo ativo em tempo real
+  private subscribeToVehicle(): void {
     this.vehicleService.activeId$
       .pipe(takeUntil(this.destroy$))
       .subscribe(id => {
@@ -90,22 +74,32 @@ export class CostsComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(list => {
               this.activeVehicle = list.find(v => v.id === id) || null;
-
-              // Atualiza a lista filtrada quando o veículo ativo muda
-              if (this.activeVehicle) {
-                const all = this.costService['costsSubject'].getValue();
-                this.costs = all.filter(
-                  c => c.vehicleId === this.activeVehicle!.id
-                );
-                this.cheapestStation = this.costService
-                  .getCheapestStation(this.activeVehicle.id);
-              }
+              this.atualizarDados();
             });
         } else {
           this.activeVehicle = null;
-          this.costs = [];
+          this.costs          = [];
+          this.postosRecentes = [];
+          this.cheapestStation = null;
         }
       });
+  }
+
+  private subscribeToCosts(): void {
+    this.costService.costs$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.atualizarDados());
+  }
+
+  // Centraliza atualização de custos, posto mais barato e postos recentes
+  private atualizarDados(): void {
+    if (!this.activeVehicle) return;
+
+    const id = this.activeVehicle.id;
+
+    this.costs           = this.costService.getByVehicle(id);
+    this.cheapestStation = this.costService.getCheapestStation(id);
+    this.postosRecentes  = this.costService.getPostosRecentes(id); // ← método público
   }
 
   // ────────────────────────────────────────
@@ -114,15 +108,15 @@ export class CostsComponent implements OnInit, OnDestroy {
 
   private buildForm(): void {
     this.costForm = this.fb.group({
-      data:          ['', Validators.required],
-      posto:         ['', Validators.required],
-      precoPorLitro: ['', [Validators.required, Validators.min(0.01)]],
-      litros:        ['', [Validators.required, Validators.min(0.1)]],
-      kmPercorrido:  ['', [Validators.required, Validators.min(1)]]
+      data:            ['', Validators.required],
+      posto:           ['', Validators.required],
+      tipoCombustivel: ['', Validators.required],
+      precoPorLitro:   ['', [Validators.required, Validators.min(0.01)]],
+      litros:          ['', [Validators.required, Validators.min(0.1)]],
+      kmPercorrido:    ['', [Validators.required, Validators.min(1)]]
     });
   }
 
-  // Escuta mudanças nos campos e atualiza o preview em tempo real
   private listenToFormChanges(): void {
     this.costForm.valueChanges
       .pipe(takeUntil(this.destroy$))
@@ -136,13 +130,8 @@ export class CostsComponent implements OnInit, OnDestroy {
     const lts   = parseFloat(litros)        || 0;
     const km    = parseFloat(kmPercorrido)  || 0;
 
-    // Distância total depende do tipo de viagem
     this.previewKmTotal = this.tipoViagem === 'idavolta' ? km * 2 : km;
-
-    // Total pago = litros × preço por litro
-    this.previewTotal = parseFloat((preco * lts).toFixed(2));
-
-    // Custo por km = total ÷ distância real
+    this.previewTotal   = parseFloat((preco * lts).toFixed(2));
     this.previewCustoKm = this.previewKmTotal > 0
       ? parseFloat((this.previewTotal / this.previewKmTotal).toFixed(2))
       : 0;
@@ -154,21 +143,21 @@ export class CostsComponent implements OnInit, OnDestroy {
 
   setTipoViagem(tipo: 'ida' | 'idavolta'): void {
     this.tipoViagem = tipo;
-    this.calcularPreview(); // recalcula ao trocar o tipo
+    this.calcularPreview();
   }
 
   // ────────────────────────────────────────
-  // NAVEGAÇÃO ENTRE TELAS
+  // NAVEGAÇÃO
   // ────────────────────────────────────────
 
   openForm(): void {
     this.costForm.reset();
-    this.tipoViagem    = 'ida';
+    this.tipoViagem     = 'ida';
     this.previewKmTotal = 0;
     this.previewTotal   = 0;
     this.previewCustoKm = 0;
 
-    // Preenche a data com hoje automaticamente
+    // Preenche data com hoje automaticamente
     const hoje = new Date().toISOString().split('T')[0];
     this.costForm.patchValue({ data: hoje });
 
@@ -195,22 +184,23 @@ export class CostsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const { data, posto, precoPorLitro, litros, kmPercorrido } =
-      this.costForm.value;
+    const { data, posto, tipoCombustivel,
+            precoPorLitro, litros, kmPercorrido } = this.costForm.value;
 
     const novoCusto: FuelCost = {
-      id:            '',                        // gerado pelo service
-      vehicleId:     this.activeVehicle.id,     // vinculado automaticamente
+      id:              '',
+      vehicleId:       this.activeVehicle.id,
       data,
       posto,
-      precoPorLitro: parseFloat(precoPorLitro),
-      litros:        parseFloat(litros),
-      kmPercorrido:  parseFloat(kmPercorrido),
-      tipoViagem:    this.tipoViagem,
-      kmTotal:       this.previewKmTotal,       // calculado
-      totalPago:     this.previewTotal,         // calculado
-      custoKm:       this.previewCustoKm,       // calculado
-      createdAt:     ''                         // gerado pelo service
+      tipoCombustivel,
+      precoPorLitro:   parseFloat(precoPorLitro),
+      litros:          parseFloat(litros),
+      kmPercorrido:    parseFloat(kmPercorrido),
+      tipoViagem:      this.tipoViagem,
+      kmTotal:         this.previewKmTotal,
+      totalPago:       this.previewTotal,
+      custoKm:         this.previewCustoKm,
+      createdAt:       ''
     };
 
     this.costService.save(novoCusto);
@@ -227,7 +217,7 @@ export class CostsComponent implements OnInit, OnDestroy {
   }
 
   // ────────────────────────────────────────
-  // HELPERS PARA O TEMPLATE
+  // HELPERS
   // ────────────────────────────────────────
 
   getError(campo: string): string {
@@ -239,6 +229,7 @@ export class CostsComponent implements OnInit, OnDestroy {
   }
 
   formatDate(dateStr: string): string {
+    if (!dateStr) return '';
     const [y, m, d] = dateStr.split('-');
     return `${d}/${m}/${y}`;
   }
