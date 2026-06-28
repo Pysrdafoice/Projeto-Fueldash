@@ -20,12 +20,10 @@ export interface Vehicle {
   // ── Consumo padrão (gasolina, etanol puro, diesel) ──
   consumoMedio:          number;
 
-  // ── Flex — dois consumos separados ──
   consumoMedioGasolina?: number;
   consumoMedioEtanol?:   number;
   combustivelAtual?:     CombustivelFlex;
 
-  // ── Híbrido ──
-  autonomiaEletrica?:    number;  // km elétrico declarado pelo fabricante
-  consumoCombustivel?:   number;  // km/L do motor a combustível
+  autonomiaEletrica?:    number; 
+  consumoCombustivel?:   number;
 }
