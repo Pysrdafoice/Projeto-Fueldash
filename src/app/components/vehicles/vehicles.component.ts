@@ -75,18 +75,21 @@ export class VehiclesComponent implements OnInit, OnDestroy {
   // ────────────────────────────────────────
 
   private buildForm(): void {
-    this.vehicleForm = this.fb.group({
-      apelido:      ['', Validators.required],
-      marca:        ['', Validators.required],
-      modelo:       ['', Validators.required],
-      ano:          ['', [Validators.required, Validators.min(1900)]],
-      placa:        ['', Validators.required],
-      combustivel:  ['', Validators.required],
-      consumoMedio: ['', [Validators.required, Validators.min(0.1)]],
-      kmAtual:      ['', [Validators.required, Validators.min(0)]]
-    });
-  }
+  this.vehicleForm = this.fb.group({
+    apelido:               ['', Validators.required],
+    marca:                 ['', Validators.required],
+    modelo:                ['', Validators.required],
+    ano:                   ['', [Validators.required, Validators.min(1900)]],
+    placa:                 ['', Validators.required],
+    combustivel:           ['', Validators.required],
+    consumoMedio:          ['', [Validators.required, Validators.min(0.1)]],
+    kmAtual:               ['', [Validators.required, Validators.min(0)]],
 
+    // ── Campos novos ──
+    capacidadeTanque:      ['', [Validators.required, Validators.min(1)]],
+    kmUltimoAbastecimento: [0]  // começa com 0, atualizado automaticamente pelo sistema
+  });
+}
   // ────────────────────────────────────────
   // NAVEGAÇÃO ENTRE TELAS
   // ────────────────────────────────────────

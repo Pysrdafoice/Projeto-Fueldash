@@ -1,13 +1,13 @@
 <div class="dashboard-container">
+
+  <!-- ── Header ── -->
   <header class="dashboard-header">
     <div class="header-content">
       <h1>FuelDash<span class="dot">.</span></h1>
       <div class="user-info">
-
         @if (userData) {
           <span>Bem-vindo, <strong>{{ userData.username }}</strong></span>
         }
-
         <button class="btn-logout" (click)="logout()">Logout</button>
       </div>
     </div>
@@ -15,62 +15,162 @@
     <!-- Veículo ativo -->
     <div class="active-vehicle">
       @if (activeVehicle) {
-        <span>🚗 {{ activeVehicle.apelido }} — {{ activeVehicle.modelo }}</span>
+        <span>
+          <i class="ti ti-car"></i>
+          {{ activeVehicle.apelido }} — {{ activeVehicle.modelo }}
+        </span>
       } @else {
-        <span>Nenhum veículo ativo</span>
+        <span class="no-vehicle">Nenhum veículo ativo</span>
       }
     </div>
-
-   
   </header>
 
   <main class="dashboard-main">
-    <div class="dashboard-grid">
-      <div class="card" (click)="openPanel('vehicles')">
-        <h2>🚗 Veículos</h2>
-        <p>Cadastre seus veículos</p>
+
+    <!-- ── Como utilizar ── -->
+    <section class="how-to-card">
+      <div class="how-to-title">
+        <i class="ti ti-info-circle" aria-hidden="true"></i>
+        Como utilizar o FuelDash
       </div>
-      <div class="card">
-        <h2>📊 Relatórios</h2>
-        <p>Acompanhe os indicadores dos gastos e consumo de forma visual</p>
+      <div class="how-to-steps">
+        <div class="how-to-step">
+          <span class="step-num">1</span> Cadastre um veículo
+        </div>
+        <div class="how-to-step">
+          <span class="step-num">2</span> Registre abastecimentos
+        </div>
+        <div class="how-to-step">
+          <span class="step-num">3</span> Informe suas rotas
+        </div>
+        <div class="how-to-step">
+          <span class="step-num">4</span> Consulte o dashboard
+        </div>
       </div>
-      <div class="card" (click)="openPanel('costs')">
-        <h2>💰 Custos</h2>
-        <p>Registre seus custos de abastecimento</p>
+      <p class="how-to-desc">
+        O dashboard utiliza as informações cadastradas nos módulos anteriores
+        para gerar análises de consumo, custos e desempenho do veículo.
+      </p>
+    </section>
+
+    <!-- ── Status do sistema ── -->
+    <div class="status-card">
+      <p class="status-label">Status do sistema</p>
+      <div class="status-items">
+        <div class="status-item" [class.ok]="hasVehicle" [class.fail]="!hasVehicle">
+          <i class="ti" [class.ti-circle-check]="hasVehicle"
+                        [class.ti-circle-x]="!hasVehicle" aria-hidden="true"></i>
+          Veículo cadastrado
+        </div>
+        <div class="status-item" [class.ok]="hasCost" [class.fail]="!hasCost">
+          <i class="ti" [class.ti-circle-check]="hasCost"
+                        [class.ti-circle-x]="!hasCost" aria-hidden="true"></i>
+          Abastecimento registrado
+        </div>
+        <div class="status-item" [class.ok]="hasRoute" [class.fail]="!hasRoute">
+          <i class="ti" [class.ti-circle-check]="hasRoute"
+                        [class.ti-circle-x]="!hasRoute" aria-hidden="true"></i>
+          Rota cadastrada
+        </div>
       </div>
-      <div class="card">
-        <h2>📍 Rotas</h2>
-        <p>Informe suas rotas de abastecimento</p>
-      </div>
+      <span class="status-summary" [class.complete]="statusClass === 'complete'"
+                                   [class.partial]="statusClass === 'partial'">
+        {{ statusSummary }}
+      </span>
     </div>
+
+    <!-- ── Alerta dinâmico ── -->
+    @if (alertMessage) {
+      <div class="alert-warn">
+        <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+        <span>{{ alertMessage }}</span>
+      </div>
+    }
+
+    <!-- ── Cards dos módulos ── -->
+    <p class="modules-label">Módulos — siga a ordem abaixo</p>
+
+    <div class="dashboard-grid">
+
+      <div class="card" [class.card-done]="hasVehicle"
+           (click)="openPanel('vehicles')">
+        <span class="card-step">Passo 1</span>
+        <i class="ti ti-car card-icon" aria-hidden="true"></i>
+        <h2>Veículos</h2>
+        <p>Cadastre o veículo, consumo médio e dados gerais</p>
+        <span class="card-tag" [class.tag-done]="hasVehicle"
+                               [class.tag-pending]="!hasVehicle">
+          {{ hasVehicle ? 'Concluído' : 'Pendente' }}
+        </span>
+      </div>
+
+      <div class="card" [class.card-done]="hasCost"
+           (click)="openPanel('costs')">
+        <span class="card-step">Passo 2</span>
+        <i class="ti ti-gas-station card-icon" aria-hidden="true"></i>
+        <h2>Custos</h2>
+        <p>Registre abastecimentos, valor e histórico de gastos</p>
+        <span class="card-tag" [class.tag-done]="hasCost"
+                               [class.tag-pending]="!hasCost">
+          {{ hasCost ? 'Concluído' : 'Pendente' }}
+        </span>
+      </div>
+
+      <div class="card" [class.card-done]="hasRoute">
+        <span class="card-step">Passo 3</span>
+        <i class="ti ti-route card-icon" aria-hidden="true"></i>
+        <h2>Rotas</h2>
+        <p>Informe rotas e distâncias percorridas</p>
+        <span class="card-tag" [class.tag-done]="hasRoute"
+                               [class.tag-pending]="!hasRoute">
+          {{ hasRoute ? 'Concluído' : 'Pendente' }}
+        </span>
+      </div>
+
+      <div class="card" [class.card-done]="hasVehicle && hasCost && hasRoute">
+        <span class="card-step">Passo 4</span>
+        <i class="ti ti-chart-bar card-icon" aria-hidden="true"></i>
+        <h2>Dashboard</h2>
+        <p>Indicadores, gráficos e visão panorâmica</p>
+        <span class="card-tag"
+              [class.tag-done]="hasVehicle && hasCost && hasRoute"
+              [class.tag-pending]="!(hasVehicle && hasCost && hasRoute)">
+          {{ (hasVehicle && hasCost && hasRoute) ? 'Disponível' : 'Aguardando dados' }}
+        </span>
+      </div>
+
+    </div>
+
   </main>
 
-  <!-- Overlay -->
+  <!-- ── Overlay ── -->
   @if (activePanel !== '') {
     <div class="overlay" (click)="closePanel()"></div>
   }
 
-<!-- Painel lateral de veículos -->
-@if (activePanel === 'vehicles') {
-  <div class="side-panel">
-    <button class="btn-close-panel" (click)="closePanel()">
-      ← Voltar
-    </button>
-    <app-vehicles/>
-  </div>
-}
+  <!-- ── Painel lateral Veículos ── -->
+  @if (activePanel === 'vehicles') {
+    <div class="side-panel">
+      <button class="btn-close-panel" (click)="closePanel()">
+        <i class="ti ti-arrow-left" aria-hidden="true"></i> Voltar
+      </button>
+      <app-vehicles />
+    </div>
+  }
 
-<!-- Painel lateral de custos -->
-@if (activePanel === 'costs') {
-  <div class="side-panel">
-    <button class="btn-close-panel" (click)="closePanel()">
-      ← Voltar
-    </button>
-    <app-costs />
-  </div>
-}
+  <!-- ── Painel lateral Custos ── -->
+  @if (activePanel === 'costs') {
+    <div class="side-panel">
+      <button class="btn-close-panel" (click)="closePanel()">
+        <i class="ti ti-arrow-left" aria-hidden="true"></i> Voltar
+      </button>
+      <app-costs />
+    </div>
+  }
 
   <footer class="dashboard-footer">
     <p>FuelDash © 2026 - Dashboard Inteligente de Gestão de Abastecimento</p>
+    <p>Desenvolvido por Anderson da cruz gomes</p>
   </footer>
+
 </div>

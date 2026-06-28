@@ -67,9 +67,23 @@ export class VehicleService {
     this.activeIdSubject.next(id); // emite o novo valor para todos inscritos
   }
 
-  // ────────────────────────────────────────────────────────
-  // HELPERS PRIVADOS
-  // ────────────────────────────────────────────────────────
+
+  // Adicione esse método no VehicleService
+// após o método setActive()
+
+updateKm(vehicleId: string, novoKm: number): void {
+  const list = this.vehiclesSubject.getValue().map(v => {
+    if (v.id === vehicleId) {
+      return {
+        ...v,
+        kmAtual:               novoKm,
+        kmUltimoAbastecimento: novoKm  // salva o km do momento do abastecimento
+      };
+    }
+    return v;
+  });
+  this.persist(list);
+}
 
   // Salva no localStorage E emite o novo valor via BehaviorSubject
   private persist(list: Vehicle[]): void {
