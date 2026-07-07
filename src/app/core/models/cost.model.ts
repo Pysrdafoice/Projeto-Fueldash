@@ -1,4 +1,3 @@
-// src/app/core/models/cost.model.ts
 
 export interface FuelCost {
   id:             string;

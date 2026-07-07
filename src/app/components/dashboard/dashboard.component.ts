@@ -10,11 +10,13 @@ import { AuthService }    from '../../auth/services/auth.service';
 import { Vehicle }        from '../../core/models/vehicle_models';
 import { VehiclesComponent } from '../vehicles/vehicles.component';
 import { CostsComponent }    from '../cost/cost.component';
+import { RoutesComponent } from '../routes/route.component';
+import { RouteService } from '../../auth/services/route.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, VehiclesComponent, CostsComponent],
+  imports: [CommonModule, VehiclesComponent, CostsComponent, RoutesComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -34,17 +36,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private vehicleService: VehicleService,
-    private costService:    CostService,
-    private authService:    AuthService,
-    private router:         Router
-  ) {}
+ constructor(
+  private vehicleService: VehicleService,
+  private costService:    CostService,
+  private routeService:   RouteService,
+  private authService:    AuthService,
+  private router:         Router
+) {}
 
   ngOnInit(): void {
     this.userData = this.authService.getAuthenticatedUser();
     this.subscribeToVehicles();
     this.subscribeToCosts();
+    this.subscribeToRoutes();
+
   }
 
   ngOnDestroy(): void {
@@ -92,6 +97,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       });
   }
+
+  private subscribeToRoutes(): void {
+  this.routeService.routes$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(routes => {
+      if (this.activeVehicle) {
+        this.hasRoute = routes.some(
+          r => r.vehicleId === this.activeVehicle!.id
+        );
+      }
+    });
+}
 
   // ────────────────────────────────────────
   // GETTERS DE STATUS — usados no template

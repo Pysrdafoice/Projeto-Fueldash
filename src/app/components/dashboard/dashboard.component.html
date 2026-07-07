@@ -116,16 +116,19 @@
         </span>
       </div>
 
-      <div class="card" [class.card-done]="hasRoute">
+      <div class="card" [class.card-done]="hasRoute"
+          (click)="openPanel('routes')">
         <span class="card-step">Passo 3</span>
         <i class="ti ti-route card-icon" aria-hidden="true"></i>
         <h2>Rotas</h2>
         <p>Informe rotas e distâncias percorridas</p>
-        <span class="card-tag" [class.tag-done]="hasRoute"
-                               [class.tag-pending]="!hasRoute">
+        <span class="card-tag"
+              [class.tag-done]="hasRoute"
+              [class.tag-pending]="!hasRoute">
           {{ hasRoute ? 'Concluído' : 'Pendente' }}
         </span>
       </div>
+
 
       <div class="card" [class.card-done]="hasVehicle && hasCost && hasRoute">
         <span class="card-step">Passo 4</span>
@@ -168,9 +171,19 @@
     </div>
   }
 
+    <!-- Painel lateral Rotas -->
+  @if (activePanel === 'routes') {
+    <div class="side-panel">
+      <button class="btn-close-panel" (click)="closePanel()">
+        <i class="ti ti-arrow-left" aria-hidden="true"></i> Voltar
+      </button>
+      <app-routes />
+    </div>
+  }
+
   <footer class="dashboard-footer">
     <p>FuelDash © 2026 - Dashboard Inteligente de Gestão de Abastecimento</p>
     <p>Desenvolvido por Anderson da cruz gomes</p>
   </footer>
-
+  
 </div>
