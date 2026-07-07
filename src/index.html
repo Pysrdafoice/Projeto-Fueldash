@@ -1,14 +1,53 @@
 <!doctype html>
 <html lang="pt-br">
-<head>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-  <meta charset="utf-8">
-  <title>MeuPrimeiroProjetoAngular</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+    <meta charset="utf-8" />
+    <title>MeuPrimeiroProjetoAngular</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script>
+      ((g) => {
+        var h,
+          a,
+          k,
+          p = "The Google Maps JavaScript API",
+          c = "google",
+          l = "importLibrary",
+          q = "__ib__",
+          m = document,
+          b = window;
+        b = b[c] || (b[c] = {});
+        var d = b.maps || (b.maps = {}),
+          r = new Set(),
+          e = new URLSearchParams(),
+          u = () =>
+            h ||
+            (h = new Promise(async (f, n) => {
+              await (a = m.createElement("script"));
+              e.set("libraries", [...r] + "");
+              for (k in g) e.set(k, g[k]);
+              a.src = `https://maps.googleapis.com/maps/api/js?` + e;
+              d[q] = f;
+              a.onerror = () => (h = null);
+              m.head.appendChild(a);
+              a.async = true;
+            }));
+        d[l] = (f, ...n) => {
+          r.add(f);
+          return u().then(() => d[l](f, ...n));
+        };
+      })({
+        key: "AIzaSyDm-4nOlgyHxXtzz8jgHEb-30_gdgJf2hg",
+        v: "weekly",
+      });
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
 </html>

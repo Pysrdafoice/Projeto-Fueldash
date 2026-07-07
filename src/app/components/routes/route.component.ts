@@ -57,11 +57,16 @@ export class RoutesComponent implements OnInit, OnDestroy {
     styles: [{ elementType: 'geometry', stylers: [{ color: '#1c2030' }] }],
   };
   directionsResults?: google.maps.DirectionsResult;
+  private autocompleteOrigem?: google.maps.places.Autocomplete;
+  private autocompleteDestino?: google.maps.places.Autocomplete;
+  private autocompleteIniciado = { origem: false, destino: false };
+  private mapsInitAttempts = 0;
 
   // ── Estimativa ──
   estimativa: Partial<Route> = {};
   calculando = false;
   mapaVisivel = false;
+  erroMapa = '';
 
   private destroy$ = new Subject<void>();
   private directionsService?: google.maps.DirectionsService;
@@ -78,7 +83,9 @@ export class RoutesComponent implements OnInit, OnDestroy {
     this.buildForm();
     this.subscribeToVehicle();
     this.subscribeToRoutes();
-    this.loadGoogleMapsApi();
+    this.initializeMapsServices();
+    this.apiLoaded = true; // sempre true agora
+    this.directionsService = new google.maps.DirectionsService();
   }
 
   ngOnDestroy(): void {
@@ -90,24 +97,50 @@ export class RoutesComponent implements OnInit, OnDestroy {
   // CARREGAR GOOGLE MAPS API
   // ────────────────────────────────────────
 
-  private loadGoogleMapsApi(): void {
-    if (typeof google !== 'undefined') {
-      this.apiLoaded = true;
-      this.directionsService = new google.maps.DirectionsService();
+  private initializeMapsServices(): void {
+    this.erroMapa = '';
+
+    if (this.mapsInitAttempts > 20) {
+      this.erroMapa =
+        'Não foi possível inicializar o Google Maps. Verifique a chave da API e a conexão.';
+      console.error('Google Maps não ficou disponível após várias tentativas.');
       return;
     }
 
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
+    if (typeof google !== 'undefined' && google.maps?.DirectionsService) {
       this.ngZone.run(() => {
         this.apiLoaded = true;
         this.directionsService = new google.maps.DirectionsService();
       });
-    };
-    document.head.appendChild(script);
+      return;
+    }
+
+    if (!document.getElementById('google-maps-script')) {
+      const script = document.createElement('script');
+      script.id = 'google-maps-script';
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        this.ngZone.run(() => {
+          this.apiLoaded = true;
+          this.directionsService = new google.maps.DirectionsService();
+        });
+      };
+      script.onerror = () => {
+        this.ngZone.run(() => {
+          this.apiLoaded = false;
+          this.directionsService = undefined;
+          this.erroMapa =
+            'Não foi possível carregar o Google Maps. Verifique a chave da API e a conexão.';
+          console.error('Falha ao carregar a API do Google Maps.', this.apiKey);
+        });
+      };
+      document.head.appendChild(script);
+    }
+
+    this.mapsInitAttempts += 1;
+    setTimeout(() => this.initializeMapsServices(), 250);
   }
 
   // ────────────────────────────────────────
@@ -163,12 +196,33 @@ export class RoutesComponent implements OnInit, OnDestroy {
 
   calcularRota(): void {
     const { origem, destino } = this.routeForm.value;
-    if (!origem || !destino || !this.directionsService || !this.activeVehicle)
+
+    if (!origem || !destino || !this.directionsService || !this.activeVehicle) {
+      this.erroMapa =
+        'Preencha origem, destino e selecione um veículo antes de calcular a rota.';
+      console.error('Calcular rota interrompido por dados incompletos.', {
+        origem,
+        destino,
+        hasDirectionsService: !!this.directionsService,
+        activeVehicle: !!this.activeVehicle,
+      });
       return;
+    }
 
     this.calculando = true;
     this.mapaVisivel = false;
+    this.erroMapa = '';
     this.estimativa = {};
+
+    if (!this.apiLoaded || !this.directionsService) {
+      this.calculando = false;
+      this.erroMapa =
+        'O Google Maps ainda não foi carregado. Aguarde um momento e tente novamente.';
+      console.error(
+        'DirectionsService indisponível porque a API do Google Maps não carregou.',
+      );
+      return;
+    }
 
     this.directionsService.route(
       {
@@ -187,6 +241,7 @@ export class RoutesComponent implements OnInit, OnDestroy {
           if (status === google.maps.DirectionsStatus.OK && result) {
             this.directionsResults = result;
             this.mapaVisivel = true;
+            this.erroMapa = '';
 
             const leg = result.routes[0].legs[0];
             const distanciaKm = (leg.distance?.value || 0) / 1000;
@@ -203,7 +258,14 @@ export class RoutesComponent implements OnInit, OnDestroy {
 
             (this.estimativa as any)['distanciaKm'] = distanciaKm;
           } else {
-            alert('Não foi possível calcular a rota. Verifique os endereços.');
+            this.erroMapa =
+              'Não foi possível calcular a rota. Verifique os endereços ou a disponibilidade da API do Google Maps.';
+            this.directionsResults = undefined;
+            this.mapaVisivel = false;
+            console.error('Falha ao calcular a rota no Directions Service.', {
+              status,
+              result,
+            });
           }
         });
       },
@@ -218,6 +280,7 @@ export class RoutesComponent implements OnInit, OnDestroy {
     this.tipoRota = tipo;
     this.estimativa = {};
     this.mapaVisivel = false;
+    this.erroMapa = '';
   }
 
   setTipoViagem(tipo: 'ida' | 'idavolta'): void {
@@ -272,6 +335,12 @@ export class RoutesComponent implements OnInit, OnDestroy {
     this.routeForm.patchValue({ data: hoje });
 
     this.viewMode = 'form';
+    this.erroMapa = '';
+
+    setTimeout(() => {
+      this.initAutocomplete('origem');
+      this.initAutocomplete('destino');
+    }, 0);
   }
 
   backToList(): void {
@@ -279,7 +348,50 @@ export class RoutesComponent implements OnInit, OnDestroy {
     this.routeForm.reset();
     this.estimativa = {};
     this.mapaVisivel = false;
+    this.erroMapa = '';
     this.directionsResults = undefined;
+  }
+
+  private initAutocomplete(campo: 'origem' | 'destino'): void {
+    if (this.autocompleteIniciado[campo]) return;
+
+    const inputId = campo === 'origem' ? 'input-origem' : 'input-destino';
+    const input = document.getElementById(inputId) as HTMLInputElement | null;
+
+    if (
+      !input ||
+      typeof google === 'undefined' ||
+      !google.maps?.places?.Autocomplete
+    ) {
+      return;
+    }
+
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      componentRestrictions: { country: 'br' },
+      fields: ['formatted_address', 'geometry', 'name'],
+    });
+
+    autocomplete.addListener('place_changed', () => {
+      this.ngZone.run(() => {
+        const place = autocomplete.getPlace();
+        const endereco = place.formatted_address || place.name || '';
+
+        if (campo === 'origem') {
+          this.routeForm.patchValue({ origem: endereco });
+          this.autocompleteOrigem = autocomplete;
+        } else {
+          this.routeForm.patchValue({ destino: endereco });
+          this.autocompleteDestino = autocomplete;
+        }
+      });
+    });
+
+    this.autocompleteIniciado[campo] = true;
+    if (campo === 'origem') {
+      this.autocompleteOrigem = autocomplete;
+    } else {
+      this.autocompleteDestino = autocomplete;
+    }
   }
 
   // ────────────────────────────────────────
@@ -354,5 +466,13 @@ export class RoutesComponent implements OnInit, OnDestroy {
     const h = Math.floor(minutos / 60);
     const m = minutos % 60;
     return h > 0 ? `${h}h ${m}min` : `${m}min`;
+  }
+
+  formatNumber(value: number | undefined | null): string {
+    if (value === undefined || value === null || Number.isNaN(value)) {
+      return '0.0';
+    }
+
+    return value.toFixed(1).replace('.', ',');
   }
 }

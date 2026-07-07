@@ -22,14 +22,16 @@
 }
 
 .panel-title h2 {
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: #f1f0ed;
   margin: 0;
 }
 
-.panel-icon { font-size: 20px; }
+.panel-icon {
+  font-size: 20px;
+}
 
 .btn-novo {
   padding: 8px 16px;
@@ -37,21 +39,26 @@
   color: #fff;
   border: none;
   border-radius: 8px;
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  transition:
+    background 0.15s,
+    transform 0.1s;
 }
 
-.btn-novo:hover { background: #ea6c0a; transform: translateY(-1px); }
+.btn-novo:hover {
+  background: #ea6c0a;
+  transform: translateY(-1px);
+}
 
 /* ── Abas ── */
 .tab-row {
   display: flex;
   gap: 4px;
   background: #1c2030;
-  border: 0.5px solid rgba(255,255,255,0.08);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 3px;
 }
@@ -68,13 +75,13 @@
   background: transparent;
   color: #7a7d8a;
   transition: all 0.15s;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
 }
 
 .tab.active {
   background: #141720;
   color: #f1f0ed;
-  border: 0.5px solid rgba(255,255,255,0.12);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
 }
 
 /* ── Veículo vinculado ── */
@@ -82,13 +89,15 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255,255,255,0.03);
-  border: 0.5px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   padding: 10px 14px;
 }
 
-.vehicle-linked-icon { font-size: 20px; }
+.vehicle-linked-icon {
+  font-size: 20px;
+}
 
 .vehicle-linked-label {
   display: block;
@@ -104,7 +113,7 @@
   font-size: 13px;
   font-weight: 600;
   color: #f1f0ed;
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
 }
 
 /* ── Formulário ── */
@@ -138,23 +147,27 @@
 
 .form-input {
   background: #1c2030;
-  border: 0.5px solid rgba(255,255,255,0.12);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   padding: 9px 12px;
   color: #f1f0ed;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-size: 13px;
   outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
   width: 100%;
 }
 
 .form-input:focus {
   border-color: #f97316;
-  box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
 }
 
-.form-input::placeholder { color: #4a4d5a; }
+.form-input::placeholder {
+  color: #4a4d5a;
+}
 
 .form-error {
   font-size: 11px;
@@ -166,7 +179,7 @@
 .toggle-row {
   display: flex;
   background: #1c2030;
-  border: 0.5px solid rgba(255,255,255,0.12);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   padding: 3px;
   gap: 3px;
@@ -184,13 +197,13 @@
   background: transparent;
   color: #7a7d8a;
   transition: all 0.2s;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
 }
 
 .toggle-btn.active {
   background: #f97316;
   color: #fff;
-  box-shadow: 0 2px 8px rgba(249,115,22,0.3);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
 }
 
 /* ── Botão calcular ── */
@@ -199,9 +212,9 @@
   padding: 10px;
   background: #1c2030;
   color: #f1f0ed;
-  border: 0.5px solid rgba(249,115,22,0.4);
+  border: 0.5px solid rgba(249, 115, 22, 0.4);
   border-radius: 8px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -209,7 +222,7 @@
 }
 
 .btn-calcular:hover:not(:disabled) {
-  background: rgba(249,115,22,0.1);
+  background: rgba(249, 115, 22, 0.1);
   border-color: #f97316;
 }
 
@@ -219,16 +232,73 @@
 }
 
 /* ── Mapa ── */
+.map-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+.map-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 2px 10px;
+}
+
+.map-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f1f0ed;
+  font-family: "Syne", sans-serif;
+}
+
+.map-card-subtitle {
+  font-size: 11px;
+  color: #7a7d8a;
+  margin-top: 2px;
+}
+
+.map-card-badge {
+  background: rgba(249, 115, 22, 0.16);
+  color: #ffb07a;
+  border: 0.5px solid rgba(249, 115, 22, 0.26);
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .map-wrap {
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 0.5px solid rgba(255,255,255,0.08);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  height: 350px;
+  min-height: 350px;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #0f1320;
+}
+
+.map-error {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 0.5px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 /* ── Estimativa ── */
 .estimativa-box {
-  background: rgba(249,115,22,0.05);
-  border: 0.5px solid rgba(249,115,22,0.3);
+  background: rgba(249, 115, 22, 0.05);
+  border: 0.5px solid rgba(249, 115, 22, 0.3);
   border-radius: 12px;
   padding: 14px;
 }
@@ -244,16 +314,16 @@
   font-size: 13px;
   font-weight: 600;
   color: #f1f0ed;
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
 }
 
 .badge-simulado {
   font-size: 10px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: rgba(249,115,22,0.1);
+  background: rgba(249, 115, 22, 0.1);
   color: #f97316;
-  border: 0.5px solid rgba(249,115,22,0.3);
+  border: 0.5px solid rgba(249, 115, 22, 0.3);
   font-weight: 500;
 }
 
@@ -273,7 +343,7 @@
 }
 
 .est-value {
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-size: 16px;
   font-weight: 700;
   color: #f97316;
@@ -289,7 +359,7 @@
 .est-divider {
   width: 0.5px;
   height: 32px;
-  background: rgba(249,115,22,0.2);
+  background: rgba(249, 115, 22, 0.2);
 }
 
 .aviso-simulado {
@@ -300,7 +370,7 @@
   color: #7a7d8a;
   line-height: 1.5;
   padding-top: 10px;
-  border-top: 0.5px solid rgba(249,115,22,0.15);
+  border-top: 0.5px solid rgba(249, 115, 22, 0.15);
 }
 
 /* ── Alerta tanque ── */
@@ -308,8 +378,8 @@
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  background: rgba(239,68,68,0.08);
-  border: 0.5px solid rgba(239,68,68,0.3);
+  background: rgba(239, 68, 68, 0.08);
+  border: 0.5px solid rgba(239, 68, 68, 0.3);
   border-radius: 10px;
   padding: 12px 14px;
   font-size: 12px;
@@ -327,13 +397,15 @@
 
 .route-card {
   background: #1c2030;
-  border: 0.5px solid rgba(255,255,255,0.08);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 14px;
   transition: border-color 0.2s;
 }
 
-.route-card:hover { border-color: rgba(255,255,255,0.15); }
+.route-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
 
 .route-card-header {
   display: flex;
@@ -351,7 +423,7 @@
 }
 
 .route-trecho {
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-size: 13px;
   font-weight: 700;
   color: #f1f0ed;
@@ -363,7 +435,7 @@
 }
 
 .route-custo {
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-size: 17px;
   font-weight: 700;
   color: #f97316;
@@ -375,7 +447,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   padding: 10px;
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 8px;
   margin-bottom: 10px;
 }
@@ -395,7 +467,7 @@
 }
 
 .detail-value {
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-size: 13px;
   font-weight: 700;
   color: #f1f0ed;
@@ -407,7 +479,11 @@
   justify-content: space-between;
 }
 
-.route-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.route-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
 
 .badge {
   font-size: 11px;
@@ -417,33 +493,33 @@
 }
 
 .badge-hist {
-  background: rgba(96,165,250,0.12);
+  background: rgba(96, 165, 250, 0.12);
   color: #60a5fa;
-  border: 0.5px solid rgba(96,165,250,0.3);
+  border: 0.5px solid rgba(96, 165, 250, 0.3);
 }
 
 .badge-plan {
-  background: rgba(167,139,250,0.12);
+  background: rgba(167, 139, 250, 0.12);
   color: #a78bfa;
-  border: 0.5px solid rgba(167,139,250,0.3);
+  border: 0.5px solid rgba(167, 139, 250, 0.3);
 }
 
 .badge-ida {
-  background: rgba(96,165,250,0.12);
+  background: rgba(96, 165, 250, 0.12);
   color: #60a5fa;
-  border: 0.5px solid rgba(96,165,250,0.3);
+  border: 0.5px solid rgba(96, 165, 250, 0.3);
 }
 
 .badge-idavolta {
-  background: rgba(249,115,22,0.12);
+  background: rgba(249, 115, 22, 0.12);
   color: #f97316;
-  border: 0.5px solid rgba(249,115,22,0.3);
+  border: 0.5px solid rgba(249, 115, 22, 0.3);
 }
 
 .badge-danger {
-  background: rgba(239,68,68,0.12);
+  background: rgba(239, 68, 68, 0.12);
   color: #ef4444;
-  border: 0.5px solid rgba(239,68,68,0.3);
+  border: 0.5px solid rgba(239, 68, 68, 0.3);
 }
 
 .btn-delete {
@@ -451,17 +527,17 @@
   border-radius: 7px;
   font-size: 12px;
   cursor: pointer;
-  border: 0.5px solid rgba(255,255,255,0.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
   background: transparent;
   color: #7a7d8a;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   transition: all 0.15s;
 }
 
 .btn-delete:hover {
   color: #ef4444;
-  border-color: rgba(239,68,68,0.3);
-  background: rgba(239,68,68,0.06);
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.06);
 }
 
 /* ── Estado vazio ── */
@@ -475,10 +551,13 @@
   gap: 8px;
 }
 
-.empty-icon { font-size: 40px; margin-bottom: 8px; }
+.empty-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
 
 .empty-title {
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-size: 16px;
   font-weight: 700;
   color: #f1f0ed;
@@ -498,13 +577,15 @@
   color: #fff;
   border: none;
   border-radius: 8px;
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
 }
 
-.btn-novo-empty:hover { background: #ea6c0a; }
+.btn-novo-empty:hover {
+  background: #ea6c0a;
+}
 
 /* ── Ações do form ── */
 .form-actions {
@@ -512,7 +593,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   padding-top: 14px;
-  border-top: 0.5px solid rgba(255,255,255,0.08);
+  border-top: 0.5px solid rgba(255, 255, 255, 0.08);
   margin-top: 4px;
 }
 
@@ -520,9 +601,9 @@
   padding: 10px;
   background: transparent;
   color: #7a7d8a;
-  border: 0.5px solid rgba(255,255,255,0.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.15s;
@@ -530,7 +611,7 @@
 
 .btn-cancelar:hover {
   color: #f1f0ed;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .btn-salvar {
@@ -539,14 +620,16 @@
   color: #fff;
   border: none;
   border-radius: 8px;
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s;
 }
 
-.btn-salvar:hover:not(:disabled) { background: #ea6c0a; }
+.btn-salvar:hover:not(:disabled) {
+  background: #ea6c0a;
+}
 
 .btn-salvar:disabled {
   background: #2a2d3a;
@@ -558,7 +641,7 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  border: 0.5px solid rgba(255,255,255,0.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
   background: transparent;
   color: #7a7d8a;
   font-size: 16px;
@@ -571,12 +654,21 @@
 
 .btn-voltar:hover {
   color: #f1f0ed;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 @media (max-width: 480px) {
-  .form-row { grid-template-columns: 1fr; }
-  .route-details { grid-template-columns: repeat(2, 1fr); }
-  .estimativa-grid { flex-direction: column; }
-  .est-divider { width: 100%; height: 0.5px; }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .route-details {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .estimativa-grid {
+    flex-direction: column;
+  }
+  .est-divider {
+    width: 100%;
+    height: 0.5px;
+  }
 }

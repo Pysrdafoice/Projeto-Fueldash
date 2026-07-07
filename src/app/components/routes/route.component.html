@@ -1,288 +1,369 @@
 <!-- ===== MODO LISTA ===== -->
-@if (viewMode === 'list') {
-<div class="routes-container">
-
-  <div class="panel-header">
-    <div class="panel-title">
-      <span class="panel-icon">📍</span>
-      <h2>Rotas</h2>
+@if (viewMode === "list") {
+  <div class="routes-container">
+    <div class="panel-header">
+      <div class="panel-title">
+        <span class="panel-icon">📍</span>
+        <h2>Rotas</h2>
+      </div>
+      <button class="btn-novo" (click)="openForm()">+ Nova rota</button>
     </div>
-    <button class="btn-novo" (click)="openForm()">+ Nova rota</button>
-  </div>
 
-  <!-- Filtros -->
-  <div class="tab-row">
-    <button class="tab" [class.active]="filtroAtivo === 'todas'"
-            (click)="setFiltro('todas')">Todas</button>
-    <button class="tab" [class.active]="filtroAtivo === 'historico'"
-            (click)="setFiltro('historico')">Histórico</button>
-    <button class="tab" [class.active]="filtroAtivo === 'planejamento'"
-            (click)="setFiltro('planejamento')">Planejamento</button>
-  </div>
+    <!-- Filtros -->
+    <div class="tab-row">
+      <button
+        class="tab"
+        [class.active]="filtroAtivo === 'todas'"
+        (click)="setFiltro('todas')"
+      >
+        Todas
+      </button>
+      <button
+        class="tab"
+        [class.active]="filtroAtivo === 'historico'"
+        (click)="setFiltro('historico')"
+      >
+        Histórico
+      </button>
+      <button
+        class="tab"
+        [class.active]="filtroAtivo === 'planejamento'"
+        (click)="setFiltro('planejamento')"
+      >
+        Planejamento
+      </button>
+    </div>
 
-  <!-- Lista -->
-  @if (routesFiltradas.length > 0) {
-  <div class="routes-list">
-    @for (route of routesFiltradas; track route.id) {
-    <div class="route-card">
+    <!-- Lista -->
+    @if (routesFiltradas.length > 0) {
+      <div class="routes-list">
+        @for (route of routesFiltradas; track route.id) {
+          <div class="route-card">
+            <div class="route-card-header">
+              <div class="route-origem-destino">
+                <span class="route-trecho">
+                  {{ route.origem }} → {{ route.destino }}
+                </span>
+                <span class="route-data">
+                  {{ formatDate(route.data) }} · {{ route.consumoUsado }} km/L ·
+                  R$ {{ route.precoLitroUsado.toFixed(2) }}/L
+                </span>
+              </div>
+              <span class="route-custo">
+                R$ {{ route.custoEstimado.toFixed(2) }}
+              </span>
+            </div>
 
-      <div class="route-card-header">
-        <div class="route-origem-destino">
-          <span class="route-trecho">
-            {{ route.origem }} → {{ route.destino }}
-          </span>
-          <span class="route-data">
-            {{ formatDate(route.data) }} ·
-            {{ route.consumoUsado }} km/L ·
-            R$ {{ route.precoLitroUsado.toFixed(2) }}/L
-          </span>
-        </div>
-        <span class="route-custo">
-          R$ {{ route.custoEstimado.toFixed(2) }}
-        </span>
+            <div class="route-details">
+              <div class="route-detail">
+                <span class="detail-label">Distância</span>
+                <span class="detail-value">{{ route.distanciaTotal }} km</span>
+              </div>
+              <div class="route-detail">
+                <span class="detail-label">Litros estimados</span>
+                <span class="detail-value"
+                  >{{ route.litrosNecessarios }} L</span
+                >
+              </div>
+              <div class="route-detail">
+                <span class="detail-label">Duração</span>
+                <span class="detail-value">{{
+                  formatDuracao(route.duracaoMinutos)
+                }}</span>
+              </div>
+            </div>
+
+            <div class="route-footer">
+              <div class="route-badges">
+                <span
+                  class="badge"
+                  [class.badge-hist]="route.tipo === 'historico'"
+                  [class.badge-plan]="route.tipo === 'planejamento'"
+                >
+                  {{
+                    route.tipo === "historico" ? "Histórico" : "Planejamento"
+                  }}
+                </span>
+                <span
+                  class="badge"
+                  [class.badge-ida]="route.tipoViagem === 'ida'"
+                  [class.badge-idavolta]="route.tipoViagem === 'idavolta'"
+                >
+                  {{
+                    route.tipoViagem === "ida" ? "Somente ida" : "Ida e volta"
+                  }}
+                </span>
+                @if (!route.tanqueSuficiente) {
+                  <span class="badge badge-danger">⚠️ Tanque insuficiente</span>
+                }
+              </div>
+              <button class="btn-delete" (click)="deleteRoute(route.id)">
+                🗑️ Excluir
+              </button>
+            </div>
+          </div>
+        }
       </div>
+    }
 
-      <div class="route-details">
-        <div class="route-detail">
-          <span class="detail-label">Distância</span>
-          <span class="detail-value">{{ route.distanciaTotal }} km</span>
-        </div>
-        <div class="route-detail">
-          <span class="detail-label">Litros estimados</span>
-          <span class="detail-value">{{ route.litrosNecessarios }} L</span>
-        </div>
-        <div class="route-detail">
-          <span class="detail-label">Duração</span>
-          <span class="detail-value">{{ formatDuracao(route.duracaoMinutos) }}</span>
-        </div>
-      </div>
-
-      <div class="route-footer">
-        <div class="route-badges">
-          <span class="badge"
-                [class.badge-hist]="route.tipo === 'historico'"
-                [class.badge-plan]="route.tipo === 'planejamento'">
-            {{ route.tipo === 'historico' ? 'Histórico' : 'Planejamento' }}
-          </span>
-          <span class="badge"
-                [class.badge-ida]="route.tipoViagem === 'ida'"
-                [class.badge-idavolta]="route.tipoViagem === 'idavolta'">
-            {{ route.tipoViagem === 'ida' ? 'Somente ida' : 'Ida e volta' }}
-          </span>
-          @if (!route.tanqueSuficiente) {
-            <span class="badge badge-danger">⚠️ Tanque insuficiente</span>
-          }
-        </div>
-        <button class="btn-delete" (click)="deleteRoute(route.id)">
-          🗑️ Excluir
+    <!-- Estado vazio -->
+    @if (routesFiltradas.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">🗺️</div>
+        <p class="empty-title">Nenhuma rota cadastrada</p>
+        <p class="empty-sub">
+          Registre rotas percorridas ou planeje viagens estimando o custo de
+          combustível
+        </p>
+        <button class="btn-novo-empty" (click)="openForm()">
+          + Adicionar rota
         </button>
       </div>
-
-    </div>
     }
   </div>
-  }
-
-  <!-- Estado vazio -->
-  @if (routesFiltradas.length === 0) {
-  <div class="empty-state">
-    <div class="empty-icon">🗺️</div>
-    <p class="empty-title">Nenhuma rota cadastrada</p>
-    <p class="empty-sub">
-      Registre rotas percorridas ou planeje viagens
-      estimando o custo de combustível
-    </p>
-    <button class="btn-novo-empty" (click)="openForm()">
-      + Adicionar rota
-    </button>
-  </div>
-  }
-
-</div>
 }
 
 <!-- ===== MODO FORMULÁRIO ===== -->
-@if (viewMode === 'form') {
-<div class="routes-container">
-
-  <div class="panel-header">
-    <div class="panel-title">
-      <button class="btn-voltar" (click)="backToList()">←</button>
-      <h2>{{ tipoRota === 'historico' ? 'Rota já feita' : 'Planejar viagem' }}</h2>
+@if (viewMode === "form") {
+  <div class="routes-container">
+    <div class="panel-header">
+      <div class="panel-title">
+        <button class="btn-voltar" (click)="backToList()">←</button>
+        <h2>
+          {{ tipoRota === "historico" ? "Rota já feita" : "Planejar viagem" }}
+        </h2>
+      </div>
     </div>
-  </div>
 
-  <!-- Veículo vinculado -->
-  @if (activeVehicle) {
-  <div class="vehicle-linked">
-    <span class="vehicle-linked-icon">🚗</span>
-    <div>
-      <span class="vehicle-linked-label">
-        {{ tipoRota === 'historico' ? 'Registrando para' : 'Calculando para' }}
-      </span>
-      <span class="vehicle-linked-name">
-        {{ activeVehicle.marca }} {{ activeVehicle.modelo }}
-        {{ activeVehicle.ano }} ·
-        {{ activeVehicle.combustivel | titlecase }} ·
-        {{ activeVehicle.consumoMedio }} km/L
-      </span>
+    <!-- Veículo vinculado -->
+    @if (activeVehicle) {
+      <div class="vehicle-linked">
+        <span class="vehicle-linked-icon">🚗</span>
+        <div>
+          <span class="vehicle-linked-label">
+            {{
+              tipoRota === "historico" ? "Registrando para" : "Calculando para"
+            }}
+          </span>
+          <span class="vehicle-linked-name">
+            {{ activeVehicle.marca }} {{ activeVehicle.modelo }}
+            {{ activeVehicle.ano }} ·
+            {{ activeVehicle.combustivel | titlecase }} ·
+            {{ activeVehicle.consumoMedio }} km/L
+          </span>
+        </div>
+      </div>
+    }
+
+    <!-- Toggle tipo de rota -->
+    <div class="tab-row">
+      <button
+        class="tab"
+        [class.active]="tipoRota === 'historico'"
+        (click)="setTipoRota('historico')"
+      >
+        Rota já feita
+      </button>
+      <button
+        class="tab"
+        [class.active]="tipoRota === 'planejamento'"
+        (click)="setTipoRota('planejamento')"
+      >
+        Planejar viagem
+      </button>
     </div>
-  </div>
-  }
 
-  <!-- Toggle tipo de rota -->
-  <div class="tab-row">
-    <button class="tab" [class.active]="tipoRota === 'historico'"
-            (click)="setTipoRota('historico')">
-      Rota já feita
-    </button>
-    <button class="tab" [class.active]="tipoRota === 'planejamento'"
-            (click)="setTipoRota('planejamento')">
-      Planejar viagem
-    </button>
-  </div>
+    <form class="route-form" [formGroup]="routeForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">
+            {{ tipoRota === "historico" ? "Data da viagem" : "Data prevista" }}
+          </label>
+          <input class="form-input" type="date" formControlName="data" />
+          @if (getError("data")) {
+            <span class="form-error">{{ getError("data") }}</span>
+          }
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo de viagem</label>
+          <div class="toggle-row">
+            <button
+              type="button"
+              class="toggle-btn"
+              [class.active]="tipoViagem === 'ida'"
+              (click)="setTipoViagem('ida')"
+            >
+              Ida
+            </button>
+            <button
+              type="button"
+              class="toggle-btn"
+              [class.active]="tipoViagem === 'idavolta'"
+              (click)="setTipoViagem('idavolta')"
+            >
+              Ida e volta
+            </button>
+          </div>
+        </div>
+      </div>
 
-  <form class="route-form" [formGroup]="routeForm">
-
-    <div class="form-row">
       <div class="form-group">
-        <label class="form-label">
-          {{ tipoRota === 'historico' ? 'Data da viagem' : 'Data prevista' }}
-        </label>
-        <input class="form-input" type="date" formControlName="data">
-        @if (getError('data')) {
-          <span class="form-error">{{ getError('data') }}</span>
+        <label class="form-label">Origem</label>
+        <input
+          id="input-origem"
+          class="form-input"
+          type="text"
+          placeholder="Ex: Rua das Flores, Salvador - BA"
+          formControlName="origem"
+        />
+        @if (getError("origem")) {
+          <span class="form-error">{{ getError("origem") }}</span>
         }
       </div>
+
       <div class="form-group">
-        <label class="form-label">Tipo de viagem</label>
-        <div class="toggle-row">
-          <button type="button" class="toggle-btn"
-                  [class.active]="tipoViagem === 'ida'"
-                  (click)="setTipoViagem('ida')">
-            Ida
-          </button>
-          <button type="button" class="toggle-btn"
-                  [class.active]="tipoViagem === 'idavolta'"
-                  (click)="setTipoViagem('idavolta')">
-            Ida e volta
-          </button>
-        </div>
+        <label class="form-label">Destino</label>
+        <input
+          id="input-destino"
+          class="form-input"
+          type="text"
+          placeholder="Ex: Av. Central, Feira de Santana - BA"
+          formControlName="destino"
+        />
+        @if (getError("destino")) {
+          <span class="form-error">{{ getError("destino") }}</span>
+        }
       </div>
-    </div>
 
-    <div class="form-group">
-      <label class="form-label">Origem</label>
-      <input class="form-input" type="text"
-             placeholder="Ex: Rua das Flores, Salvador - BA"
-             formControlName="origem">
-      @if (getError('origem')) {
-        <span class="form-error">{{ getError('origem') }}</span>
-      }
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Destino</label>
-      <input class="form-input" type="text"
-             placeholder="Ex: Av. Central, Feira de Santana - BA"
-             formControlName="destino">
-      @if (getError('destino')) {
-        <span class="form-error">{{ getError('destino') }}</span>
-      }
-    </div>
-
-    <!-- Botão calcular -->
-    <button type="button" class="btn-calcular"
-            [disabled]="routeForm.get('origem')?.invalid ||
-                        routeForm.get('destino')?.invalid || calculando"
-            (click)="calcularRota()">
-      @if (calculando) {
-        Calculando...
-      } @else {
-        🗺️ Calcular rota
-      }
-    </button>
-
-    <!-- Mapa -->
-    @if (apiLoaded && mapaVisivel && directionsResults) {
-    <div class="map-wrap">
-      <google-map [center]="mapCenter" [zoom]="mapZoom"
-                  [options]="mapOptions"
-                  width="100%" height="180px">
-        <map-directions-renderer
-          [directions]="directionsResults">
-        </map-directions-renderer>
-      </google-map>
-    </div>
-    }
-
-    <!-- Alerta de tanque insuficiente -->
-    @if (estimativa.tanqueSuficiente === false) {
-    <div class="aviso-tanque">
-      <span>⚠️</span>
-      <div>
-        <strong>Combustível insuficiente para a viagem completa.</strong><br>
-        Estimativa: {{ estimativa.litrosNecessarios }} L necessários ·
-        Tanque atual: ~{{ estimativa.litrosDisponiveis }} L disponíveis.<br>
-        Seu carro alcança aproximadamente
-        <strong>{{ estimativa.kmMaximoAtual }} km</strong>
-        com o combustível atual. Abasteça antes ou durante o trajeto.
-      </div>
-    </div>
-    }
-
-    <!-- Estimativa -->
-    @if (estimativa.custoEstimado !== undefined) {
-    <div class="estimativa-box">
-      <div class="estimativa-header">
-        <span class="estimativa-title">Estimativa de custo</span>
-        <span class="badge-simulado">Valor simulado</span>
-      </div>
-      <div class="estimativa-grid">
-        <div class="est-item">
-          <span class="est-value">{{ estimativa.distanciaTotal }} km</span>
-          <span class="est-label">
-            {{ tipoViagem === 'idavolta' ? 'Ida e volta' : 'Distância' }}
-          </span>
-        </div>
-        <div class="est-divider"></div>
-        <div class="est-item">
-          <span class="est-value">{{ estimativa.litrosNecessarios }} L</span>
-          <span class="est-label">Litros estimados</span>
-        </div>
-        <div class="est-divider"></div>
-        <div class="est-item">
-          <span class="est-value">
-            R$ {{ estimativa.custoEstimado?.toFixed(2) }}
-          </span>
-          <span class="est-label">Custo estimado</span>
-        </div>
-      </div>
-      <div class="aviso-simulado">
-        <span>ℹ️</span>
-        <span>
-          Estimativa baseada no consumo médio cadastrado
-          ({{ estimativa.consumoUsado }} km/L) e no preço médio dos seus
-          abastecimentos (R$ {{ estimativa.precoLitroUsado?.toFixed(2) }}/L).
-          O valor real pode variar conforme trânsito e estilo de condução.
-        </span>
-      </div>
-    </div>
-    }
-
-    <div class="form-actions">
-      <button type="button" class="btn-cancelar" (click)="backToList()">
-        Cancelar
+      <!-- Botão calcular -->
+      <button
+        type="button"
+        class="btn-calcular"
+        [disabled]="
+          routeForm.get('origem')?.invalid ||
+          routeForm.get('destino')?.invalid ||
+          calculando
+        "
+        (click)="calcularRota()"
+      >
+        @if (calculando) {
+          Calculando...
+        } @else {
+          🗺️ Calcular rota
+        }
       </button>
-      <button type="button" class="btn-salvar"
-              [disabled]="routeForm.invalid ||
-                          estimativa.custoEstimado === undefined"
-              (click)="onSubmit()">
-        {{ tipoRota === 'historico' ? 'Salvar rota' : 'Salvar planejamento' }}
-      </button>
-    </div>
 
-  </form>
+      @if (erroMapa) {
+        <div class="map-error">{{ erroMapa }}</div>
+      }
 
-</div>
+      <!-- Alerta de tanque insuficiente -->
+      @if (estimativa.tanqueSuficiente === false) {
+        <div class="aviso-tanque">
+          <span>⚠️</span>
+          <div>
+            <strong>Combustível insuficiente para a viagem completa.</strong
+            ><br />
+            Estimativa: {{ estimativa.litrosNecessarios }} L necessários ·
+            Tanque atual: ~{{ estimativa.litrosDisponiveis }} L disponíveis.<br />
+            Seu carro alcança aproximadamente
+            <strong>{{ formatNumber(estimativa.kmMaximoAtual) }} km</strong>
+            com o combustível atual. Abasteça antes ou durante o trajeto.
+          </div>
+        </div>
+      }
+
+      <!-- Estimativa -->
+      @if (estimativa.custoEstimado !== undefined) {
+        <div class="estimativa-box">
+          <div class="estimativa-header">
+            <span class="estimativa-title">Estimativa de custo</span>
+            <span class="badge-simulado">Valor simulado</span>
+          </div>
+          <div class="estimativa-grid">
+            <div class="est-item">
+              <span class="est-value"
+                >{{ formatNumber(estimativa.distanciaTotal) }} km</span
+              >
+              <span class="est-label">
+                {{ tipoViagem === "idavolta" ? "Ida e volta" : "Distância" }}
+              </span>
+            </div>
+            <div class="est-divider"></div>
+            <div class="est-item">
+              <span class="est-value"
+                >{{ estimativa.litrosNecessarios }} L</span
+              >
+              <span class="est-label">Litros estimados</span>
+            </div>
+            <div class="est-divider"></div>
+            <div class="est-item">
+              <span class="est-value">
+                R$
+                {{
+                  estimativa.custoEstimado !== undefined
+                    ? estimativa.custoEstimado.toFixed(2)
+                    : "0.00"
+                }}
+              </span>
+              <span class="est-label">Custo estimado</span>
+            </div>
+          </div>
+          <div class="aviso-simulado">
+            <span>ℹ️</span>
+            <span>
+              Estimativa baseada no consumo médio cadastrado ({{
+                estimativa.consumoUsado
+              }}
+              km/L) e no preço médio dos seus abastecimentos (R$
+              {{ estimativa.precoLitroUsado?.toFixed(2) }}/L). O valor real pode
+              variar conforme trânsito e estilo de condução.
+            </span>
+          </div>
+        </div>
+      }
+
+      @if (apiLoaded && mapaVisivel && directionsResults) {
+        <div class="map-card">
+          <div class="map-card-header">
+            <div>
+              <div class="map-card-title">🗺️ Rota no mapa</div>
+              <div class="map-card-subtitle">
+                Trajeto atualizado com a rota calculada
+              </div>
+            </div>
+            <span class="map-card-badge">Live</span>
+          </div>
+          <div class="map-wrap">
+            <google-map
+              [center]="mapCenter"
+              [zoom]="mapZoom"
+              [options]="mapOptions"
+              width="100%"
+              height="100%"
+            >
+              <map-directions-renderer [directions]="directionsResults">
+              </map-directions-renderer>
+            </google-map>
+          </div>
+        </div>
+      }
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancelar" (click)="backToList()">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn-salvar"
+          [disabled]="
+            routeForm.invalid || estimativa.custoEstimado === undefined
+          "
+          (click)="onSubmit()"
+        >
+          {{ tipoRota === "historico" ? "Salvar rota" : "Salvar planejamento" }}
+        </button>
+      </div>
+    </form>
+  </div>
 }
