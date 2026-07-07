@@ -1,38 +1,46 @@
 // src/app/components/routes/routes.component.ts
 
-import { Component, OnInit, OnDestroy,
-         NgZone, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule }                   from '@angular/common';
-import { ReactiveFormsModule,
-         FormBuilder, FormGroup,
-         Validators }                    from '@angular/forms';
-import { Subject }                        from 'rxjs';
-import { takeUntil }                      from 'rxjs/operators';
-import { GoogleMapsModule }               from '@angular/google-maps';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  NgZone,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { GoogleMapsModule } from '@angular/google-maps';
 
-import { Route }          from '../../core/models/route.model';
-import { RouteService }   from '../../auth/services/route.service';
+import { Route } from '../../core/models/route.model';
+import { RouteService } from '../../auth/services/route.service';
 import { VehicleService } from '../../auth/services/vehicle.service';
-import { Vehicle }        from '../../core/models/vehicle_models';
-import { environment }    from '../../environments/environment.component';
+import { Vehicle } from '../../core/models/vehicle_models';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-routes',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, GoogleMapsModule],
   templateUrl: './route.component.html',
-  styleUrls: ['./route.component.css']
+  styleUrls: ['./route.component.css'],
 })
 export class RoutesComponent implements OnInit, OnDestroy {
-
   // ── Estado da tela ──
-  viewMode:   'list' | 'form' = 'list';
-  tipoRota:   'historico' | 'planejamento' = 'historico';
+  viewMode: 'list' | 'form' = 'list';
+  tipoRota: 'historico' | 'planejamento' = 'historico';
   tipoViagem: 'ida' | 'idavolta' = 'ida';
   filtroAtivo: 'todas' | 'historico' | 'planejamento' = 'todas';
 
   // ── Dados ──
-  routes:        Route[] = [];
+  routes: Route[] = [];
   routesFiltradas: Route[] = [];
   activeVehicle: Vehicle | null = null;
 
@@ -40,14 +48,13 @@ export class RoutesComponent implements OnInit, OnDestroy {
   routeForm!: FormGroup;
 
   // ── Google Maps ──
-  apiLoaded     = false;
-  mapCenter     = { lat: -12.9714, lng: -38.5014 }; // Salvador
-  mapZoom       = 12;
+  apiLoaded = false;
+  mapCenter = { lat: -12.9714, lng: -38.5014 }; // Salvador
+  mapZoom = 12;
   mapOptions: google.maps.MapOptions = {
     disableDefaultUI: true,
     zoomControl: true,
-    styles: [{ elementType: 'geometry',
-               stylers: [{ color: '#1c2030' }] }]
+    styles: [{ elementType: 'geometry', stylers: [{ color: '#1c2030' }] }],
   };
   directionsResults?: google.maps.DirectionsResult;
 
@@ -56,15 +63,15 @@ export class RoutesComponent implements OnInit, OnDestroy {
   calculando = false;
   mapaVisivel = false;
 
-  private destroy$    = new Subject<void>();
+  private destroy$ = new Subject<void>();
   private directionsService?: google.maps.DirectionsService;
   private readonly apiKey = environment.googleMapsApiKey;
 
   constructor(
-    private fb:             FormBuilder,
-    private routeService:   RouteService,
+    private fb: FormBuilder,
+    private routeService: RouteService,
     private vehicleService: VehicleService,
-    private ngZone:         NgZone
+    private ngZone: NgZone,
   ) {}
 
   ngOnInit(): void {
@@ -110,12 +117,12 @@ export class RoutesComponent implements OnInit, OnDestroy {
   private subscribeToVehicle(): void {
     this.vehicleService.activeId$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(id => {
+      .subscribe((id) => {
         if (id) {
           this.vehicleService.vehicles$
             .pipe(takeUntil(this.destroy$))
-            .subscribe(list => {
-              this.activeVehicle = list.find(v => v.id === id) || null;
+            .subscribe((list) => {
+              this.activeVehicle = list.find((v) => v.id === id) || null;
               this.atualizarLista();
             });
         } else {
@@ -144,9 +151,9 @@ export class RoutesComponent implements OnInit, OnDestroy {
 
   private buildForm(): void {
     this.routeForm = this.fb.group({
-      origem:  ['', Validators.required],
+      origem: ['', Validators.required],
       destino: ['', Validators.required],
-      data:    ['', Validators.required]
+      data: ['', Validators.required],
     });
   }
 
@@ -156,22 +163,22 @@ export class RoutesComponent implements OnInit, OnDestroy {
 
   calcularRota(): void {
     const { origem, destino } = this.routeForm.value;
-    if (!origem || !destino || !this.directionsService
-        || !this.activeVehicle) return;
+    if (!origem || !destino || !this.directionsService || !this.activeVehicle)
+      return;
 
-    this.calculando  = true;
+    this.calculando = true;
     this.mapaVisivel = false;
-    this.estimativa  = {};
+    this.estimativa = {};
 
     this.directionsService.route(
       {
-        origin:      origem,
+        origin: origem,
         destination: destino,
-        travelMode:  google.maps.TravelMode.DRIVING,
+        travelMode: google.maps.TravelMode.DRIVING,
         drivingOptions: {
           departureTime: new Date(),
-          trafficModel:  google.maps.TrafficModel.BEST_GUESS
-        }
+          trafficModel: google.maps.TrafficModel.BEST_GUESS,
+        },
       },
       (result, status) => {
         this.ngZone.run(() => {
@@ -181,27 +188,25 @@ export class RoutesComponent implements OnInit, OnDestroy {
             this.directionsResults = result;
             this.mapaVisivel = true;
 
-            const leg            = result.routes[0].legs[0];
-            const distanciaKm    = (leg.distance?.value || 0) / 1000;
+            const leg = result.routes[0].legs[0];
+            const distanciaKm = (leg.distance?.value || 0) / 1000;
             const duracaoMinutos = Math.round(
-              (leg.duration_in_traffic?.value ||
-               leg.duration?.value || 0) / 60
+              (leg.duration_in_traffic?.value || leg.duration?.value || 0) / 60,
             );
 
             this.estimativa = this.routeService.calcularEstimativa(
               this.activeVehicle!.id,
               distanciaKm,
               this.tipoViagem,
-              duracaoMinutos
+              duracaoMinutos,
             );
 
             (this.estimativa as any)['distanciaKm'] = distanciaKm;
-
           } else {
             alert('Não foi possível calcular a rota. Verifique os endereços.');
           }
         });
-      }
+      },
     );
   }
 
@@ -210,7 +215,7 @@ export class RoutesComponent implements OnInit, OnDestroy {
   // ────────────────────────────────────────
 
   setTipoRota(tipo: 'historico' | 'planejamento'): void {
-    this.tipoRota  = tipo;
+    this.tipoRota = tipo;
     this.estimativa = {};
     this.mapaVisivel = false;
   }
@@ -218,13 +223,16 @@ export class RoutesComponent implements OnInit, OnDestroy {
   setTipoViagem(tipo: 'ida' | 'idavolta'): void {
     this.tipoViagem = tipo;
     // Recalcula se já tem resultado
-    if (this.mapaVisivel && this.activeVehicle
-        && (this.estimativa as any)['distanciaKm']) {
+    if (
+      this.mapaVisivel &&
+      this.activeVehicle &&
+      (this.estimativa as any)['distanciaKm']
+    ) {
       this.estimativa = this.routeService.calcularEstimativa(
         this.activeVehicle.id,
         (this.estimativa as any)['distanciaKm'],
         tipo,
-        this.estimativa.duracaoMinutos || 0
+        this.estimativa.duracaoMinutos || 0,
       );
     }
   }
@@ -243,7 +251,7 @@ export class RoutesComponent implements OnInit, OnDestroy {
       this.routesFiltradas = this.routes;
     } else {
       this.routesFiltradas = this.routes.filter(
-        r => r.tipo === this.filtroAtivo
+        (r) => r.tipo === this.filtroAtivo,
       );
     }
   }
@@ -254,9 +262,9 @@ export class RoutesComponent implements OnInit, OnDestroy {
 
   openForm(): void {
     this.routeForm.reset();
-    this.tipoRota    = 'historico';
-    this.tipoViagem  = 'ida';
-    this.estimativa  = {};
+    this.tipoRota = 'historico';
+    this.tipoViagem = 'ida';
+    this.estimativa = {};
     this.mapaVisivel = false;
     this.directionsResults = undefined;
 
@@ -269,7 +277,7 @@ export class RoutesComponent implements OnInit, OnDestroy {
   backToList(): void {
     this.viewMode = 'list';
     this.routeForm.reset();
-    this.estimativa  = {};
+    this.estimativa = {};
     this.mapaVisivel = false;
     this.directionsResults = undefined;
   }
@@ -279,8 +287,11 @@ export class RoutesComponent implements OnInit, OnDestroy {
   // ────────────────────────────────────────
 
   onSubmit(): void {
-    if (this.routeForm.invalid || !this.activeVehicle
-        || !this.estimativa.distanciaTotal) {
+    if (
+      this.routeForm.invalid ||
+      !this.activeVehicle ||
+      !this.estimativa.distanciaTotal
+    ) {
       alert('Calcule a rota antes de salvar.');
       return;
     }
@@ -288,24 +299,24 @@ export class RoutesComponent implements OnInit, OnDestroy {
     const { origem, destino, data } = this.routeForm.value;
 
     const novaRota: Route = {
-      id:                '',
-      vehicleId:         this.activeVehicle.id,
-      tipo:              this.tipoRota,
-      tipoViagem:        this.tipoViagem,
+      id: '',
+      vehicleId: this.activeVehicle.id,
+      tipo: this.tipoRota,
+      tipoViagem: this.tipoViagem,
       origem,
       destino,
       data,
-      distanciaKm:       (this.estimativa as any)['distanciaKm'] || 0,
-      distanciaTotal:    this.estimativa.distanciaTotal    || 0,
-      duracaoMinutos:    this.estimativa.duracaoMinutos    || 0,
+      distanciaKm: (this.estimativa as any)['distanciaKm'] || 0,
+      distanciaTotal: this.estimativa.distanciaTotal || 0,
+      duracaoMinutos: this.estimativa.duracaoMinutos || 0,
       litrosNecessarios: this.estimativa.litrosNecessarios || 0,
-      custoEstimado:     this.estimativa.custoEstimado     || 0,
-      consumoUsado:      this.estimativa.consumoUsado      || 0,
-      precoLitroUsado:   this.estimativa.precoLitroUsado   || 0,
+      custoEstimado: this.estimativa.custoEstimado || 0,
+      consumoUsado: this.estimativa.consumoUsado || 0,
+      precoLitroUsado: this.estimativa.precoLitroUsado || 0,
       litrosDisponiveis: this.estimativa.litrosDisponiveis || 0,
-      tanqueSuficiente:  this.estimativa.tanqueSuficiente  ?? true,
-      kmMaximoAtual:     this.estimativa.kmMaximoAtual     || 0,
-      createdAt:         ''
+      tanqueSuficiente: this.estimativa.tanqueSuficiente ?? true,
+      kmMaximoAtual: this.estimativa.kmMaximoAtual || 0,
+      createdAt: '',
     };
 
     this.routeService.save(novaRota);
