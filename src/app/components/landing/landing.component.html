@@ -1,0 +1,106 @@
+<div class="landing-page">
+
+  <div class="landing-topbar-gradient" aria-hidden="true"></div>
+
+  <header class="landing-header">
+    <span class="logo">FuelDash<span class="logo-dot">.</span></span>
+    <button class="btn-outline" (click)="entrar()">Entrar</button>
+  </header>
+
+  <section
+    class="carousel"
+    role="region"
+    aria-roledescription="carrossel"
+    aria-label="Apresentação do FuelDash"
+    (mouseenter)="onMouseEnter()"
+    (mouseleave)="onMouseLeave()"
+  >
+    <div
+      class="carousel-track"
+      [style.transform]="'translateX(-' + (currentIndex * (100 / totalSlides)) + '%)'"
+    >
+
+      <div class="slide">
+        <span class="eyebrow">FuelDash</span>
+        <h1>Seja bem-vindo ao futuro do controle de consumo</h1>
+        <p>O FuelDash é o seu novo assistente inteligente para gestão de custos, trajetos e performance automotiva. Um ecossistema projetado para remover o estresse da sua rotina financeira.</p>
+      </div>
+
+      <div class="slide">
+        <h2>Por que usar o FuelDash?</h2>
+        <p>Controlar gastos de abastecimento manualmente é complexo. O FuelDash automatiza os cálculos de km/l, o custo real de cada quilômetro percorrido e sinaliza tendências de despesas indesejadas antes que afetem sua carteira.</p>
+        <span class="pill-success">Decisões guiadas por dados reais</span>
+      </div>
+
+      <div class="slide">
+        <h2>Projetado para todos. Sem exceções.</h2>
+        <p class="slide-sub">Motorista de aplicativo monitorando lucros diários ou empresa gerenciando uma frota complexa: o FuelDash se adapta ao seu cenário.</p>
+        <div class="audience-cards">
+          <div class="audience-card">
+            <i class="ti ti-car" aria-hidden="true"></i>
+            <p class="audience-title">Pessoas físicas</p>
+            <p class="audience-desc">Carros, motos e controle de viagens familiares.</p>
+          </div>
+          <div class="audience-card">
+            <i class="ti ti-building" aria-hidden="true"></i>
+            <p class="audience-title">Empresas (PJ)</p>
+            <p class="audience-desc">Frotas, utilitários leves, pesados e custos consolidados.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide">
+        <span class="step-number">1</span>
+        <h3>Cadastre um veículo</h3>
+        <p>Leva 30 segundos, sem burocracia.</p>
+      </div>
+
+      <div class="slide">
+        <span class="step-number">2</span>
+        <h3>Registre abastecimentos</h3>
+        <p>Cada gasto vira parte do seu histórico real.</p>
+      </div>
+
+      <div class="slide">
+        <span class="step-number">3</span>
+        <h3>Informe suas rotas</h3>
+        <p>Distância percorrida, direto do seu dia a dia.</p>
+      </div>
+
+      <div class="slide">
+        <h2>Visualize o poder da sua economia</h2>
+        <p>O dashboard analisa o histórico cruzado dos passos anteriores e gera insights imediatos e históricos de preços nos postos de combustível.</p>
+        <button class="btn-primary" (click)="criarConta()">Criar conta grátis</button>
+      </div>
+
+    </div>
+
+    <button class="nav-arrow nav-arrow-left" (click)="previous()" aria-label="Slide anterior">
+      <i class="ti ti-chevron-left" aria-hidden="true"></i>
+    </button>
+    <button class="nav-arrow nav-arrow-right" (click)="next()" aria-label="Próximo slide">
+      <i class="ti ti-chevron-right" aria-hidden="true"></i>
+    </button>
+  </section>
+
+  <div class="gauge" role="tablist" aria-label="Navegar entre slides">
+    @for (i of slideIndexes; track i) {
+      <button
+        class="gauge-segment"
+        role="tab"
+        [attr.aria-selected]="i === currentIndex"
+        [attr.aria-label]="'Ir para o slide ' + (i + 1)"
+        (click)="goTo(i)"
+      >
+        <span class="gauge-fill" [style.width.%]="progressWidths[i]"></span>
+      </button>
+    }
+  </div>
+
+  <div class="landing-footer-gradient" aria-hidden="true"></div>
+
+  <footer class="landing-footer">
+    <p>FuelDash © 2026 · Dashboard inteligente de gestão de abastecimento</p>
+  </footer>
+
+</div>
