@@ -4,8 +4,7 @@ import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { authGuard } from './core/guards/auth.guard';
 import { LandingComponent } from './components/landing/landing.component';
-
-
+import {GraficosComponent} from './components/graficos/graficos.component';
 export const routes: Routes = [
 
   { path: '', redirectTo: 'landing', pathMatch: 'full' },
@@ -22,4 +21,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
 
+   {
+    path: 'graficos',
+    component: GraficosComponent
+  }
 ];

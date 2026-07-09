@@ -12,11 +12,12 @@ import { VehiclesComponent } from '../vehicles/vehicles.component';
 import { CostsComponent }    from '../cost/cost.component';
 import { RoutesComponent } from '../routes/route.component';
 import { RouteService } from '../../auth/services/route.service';
+import { GraficosComponent } from "../graficos/graficos.component";
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, VehiclesComponent, CostsComponent, RoutesComponent],
+  imports: [CommonModule, VehiclesComponent, CostsComponent, RoutesComponent, GraficosComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -146,6 +147,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // ────────────────────────────────────────
   // AÇÕES
   // ────────────────────────────────────────
+
+  goToGraficos(): void {
+  this.router.navigate(['/graficos']);
+}
 
   openPanel(panel: string): void { this.activePanel = panel; }
   closePanel(): void             { this.activePanel = '';    }

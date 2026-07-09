@@ -130,17 +130,31 @@
       </div>
 
 
-      <div class="card" [class.card-done]="hasVehicle && hasCost && hasRoute">
-        <span class="card-step">Passo 4</span>
-        <i class="ti ti-chart-bar card-icon" aria-hidden="true"></i>
-        <h2>Dashboard</h2>
-        <p>Indicadores, gráficos e visão panorâmica</p>
-        <span class="card-tag"
-              [class.tag-done]="hasVehicle && hasCost && hasRoute"
-              [class.tag-pending]="!(hasVehicle && hasCost && hasRoute)">
-          {{ (hasVehicle && hasCost && hasRoute) ? 'Disponível' : 'Aguardando dados' }}
-        </span>
-      </div>
+      <div
+  class="card"
+  [class.card-done]="hasVehicle && hasCost && hasRoute"
+  (click)="goToGraficos()">
+
+  <span class="card-step">Passo 4</span>
+
+  <i class="ti ti-chart-bar card-icon"></i>
+
+  <h2>Gráficos</h2>
+
+  <p>Indicadores, gráficos e visão panorâmica</p>
+
+  <span
+    class="card-tag"
+    [class.tag-done]="hasVehicle && hasCost && hasRoute"
+    [class.tag-pending]="!(hasVehicle && hasCost && hasRoute)">
+
+    {{ (hasVehicle && hasCost && hasRoute)
+        ? 'Disponível'
+        : 'Aguardando dados' }}
+
+  </span>
+
+</div>
 
     </div>
 
@@ -185,5 +199,5 @@
     <p>FuelDash © 2026 - Dashboard Inteligente de Gestão de Abastecimento</p>
     <p>Desenvolvido por Anderson da cruz gomes</p>
   </footer>
-  
+
 </div>

@@ -1,20 +1,16 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 
 import Chart from 'chart.js/auto';
 
 @Component({
-
-selector:'app-graficos',
-
-standalone:true,
-
-templateUrl:'./graficos.component.html',
-
-styleUrls:['./graficos.component.css']
-
+  selector: 'app-graficos',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './graficos.component.html',
+  styleUrls: ['./graficos.component.css']
 })
-
-export class DashboardComponent implements OnInit{
+export class GraficosComponent implements OnInit{
 
 totalSpent=850;
 
