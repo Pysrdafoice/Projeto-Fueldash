@@ -1,97 +1,205 @@
-<div class="dashboard">
+<div class="graficos-page">
 
-  <h1>Dashboard</h1>
+  <!-- Top bar -->
+  <div class="top-bar">
+    <button class="back-btn" (click)="voltar()">
+      <i class="ti ti-arrow-left" aria-hidden="true"></i> Dashboard
+    </button>
+    <h1 class="page-title">Analytics</h1>
+    <span class="periodo-label">Últimos {{ periodoMeses }} meses</span>
+  </div>
 
-  <p class="subtitle">
-    Visualização geral do desempenho do veículo.
-  </p>
+  <!-- Sem veículo -->
+  @if (vehicles.length === 0) {
+  <div class="empty-full">
+    <i class="ti ti-car" aria-hidden="true"></i>
+    <p>Nenhum veículo cadastrado</p>
+    <span>Cadastre um veículo para ver as análises</span>
+  </div>
+  }
+
+  @if (vehicles.length > 0) {
+
+  <!-- Seletor de veículo -->
+  <div class="vehicle-selector">
+    @for (v of vehicles; track v.id) {
+    <button class="v-chip"
+            [class.active]="activeVehicle?.id === v.id"
+            (click)="selecionarVeiculo(v)">
+      🚗 {{ v.apelido || v.modelo }}
+    </button>
+    }
+  </div>
+
+  <!-- Filtro de período -->
+  <div class="periodo-row">
+    <button class="filter-btn" [class.active]="periodoMeses === 3"
+            (click)="setPeriodo(3)">3 meses</button>
+    <button class="filter-btn" [class.active]="periodoMeses === 6"
+            (click)="setPeriodo(6)">6 meses</button>
+    <button class="filter-btn" [class.active]="periodoMeses === 12"
+            (click)="setPeriodo(12)">12 meses</button>
+  </div>
+
+  <!-- Alerta de economia -->
+  @if (economiaR$ > 0 && melhorPosto) {
+  <div class="alert-economia">
+    <i class="ti ti-bulb" aria-hidden="true"></i>
+    <span>
+      Você poderia economizar <strong>R$ {{ economiaR$.toFixed(2) }}/mês</strong>
+      abastecendo sempre no <strong>{{ melhorPosto }}</strong>.
+    </span>
+  </div>
+  }
 
   <!-- KPIs -->
+  <div class="kpis-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total gasto</div>
+      <div class="kpi-value">R$ {{ totalGasto.toFixed(2) }}</div>
+      <div class="kpi-sub">últimos {{ periodoMeses }} meses</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Consumo médio</div>
+      <div class="kpi-value">{{ consumoMedio }} km/L</div>
+      <div class="kpi-sub">cadastrado no veículo</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Autonomia restante</div>
+      <div class="kpi-value">{{ autonomia | number }} km</div>
+      <div class="kpi-sub">~{{ litrosNoTanque }} L no tanque</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Melhor posto</div>
+      <div class="kpi-value kpi-accent">{{ melhorPosto || '--' }}</div>
+      <div class="kpi-sub">menor preço médio</div>
+    </div>
+  </div>
 
-  <div class="kpis">
+  <!-- Gráficos -->
+  <div class="charts-grid">
 
-    <div class="card">
-      <h3>Total Gasto</h3>
-      <span>R$ {{totalSpent}}</span>
+    <!-- Gastos mensais -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Evolução dos gastos</span>
+      </div>
+      @if (costs.length > 0) {
+        <div class="chart-wrap">
+          <canvas id="gastosChart"
+                  role="img"
+                  aria-label="Gráfico de barras com evolução dos gastos mensais em combustível">
+          </canvas>
+        </div>
+      } @else {
+        <div class="chart-empty">Nenhum registro no período</div>
+      }
     </div>
 
-    <div class="card">
-      <h3>Consumo Médio</h3>
-      <span>{{avgConsumption}} km/L</span>
+    <!-- Combustíveis -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Distribuição por combustível</span>
+      </div>
+      @if (costs.length > 0) {
+        <div class="chart-wrap">
+          <canvas id="combustiveisChart"
+                  role="img"
+                  aria-label="Gráfico de pizza com distribuição de gastos por tipo de combustível">
+          </canvas>
+        </div>
+      } @else {
+        <div class="chart-empty">Nenhum registro no período</div>
+      }
     </div>
 
-    <div class="card">
-      <h3>Autonomia</h3>
-      <span>{{autonomy}} km</span>
+    <!-- Postos -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Ranking de postos</span>
+      </div>
+      @if (rankingPostos.length > 0) {
+        <div class="chart-wrap" [style.height.px]="rankingPostos.length * 40 + 80">
+          <canvas id="postosChart"
+                  role="img"
+                  aria-label="Gráfico de barras horizontais com preço médio por posto">
+          </canvas>
+        </div>
+      } @else {
+        <div class="chart-empty">Nenhum posto registrado</div>
+      }
     </div>
 
-    <div class="card">
-      <h3>Último abastecimento</h3>
-      <span>{{lastFuel}}</span>
+    <!-- Rotas — full width -->
+    <div class="chart-card chart-full">
+      <div class="chart-header">
+        <span class="chart-title">Top 5 rotas por custo</span>
+      </div>
+      @if (routes.length > 0) {
+        <div class="chart-wrap">
+          <canvas id="rotasChart"
+                  role="img"
+                  aria-label="Gráfico de barras com top 5 rotas mais caras">
+          </canvas>
+        </div>
+      } @else {
+        <div class="chart-empty">Nenhuma rota registrada no período</div>
+      }
     </div>
 
   </div>
 
-  <div class="charts">
-
-      <div class="chart">
-
-          <h3>Evolução dos gastos</h3>
-
-          <canvas id="expensesChart"></canvas>
-
+  <!-- Análise de rotas -->
+  @if (routes.length > 0) {
+  <div class="section-title-plain">Análise de rotas</div>
+  <div class="routes-grid">
+    @if (rotaMaisLonga) {
+    <div class="route-stat">
+      <div class="route-stat-label">Rota mais longa</div>
+      <div class="route-stat-value">{{ rotaMaisLonga.distanciaTotal }} km</div>
+      <div class="route-stat-trecho">
+        {{ rotaMaisLonga.origem.split(',')[0] }} →
+        {{ rotaMaisLonga.destino.split(',')[0] }}
       </div>
-
-      <div class="chart">
-
-          <h3>Cidade x Estrada</h3>
-
-          <canvas id="consumptionChart"></canvas>
-
+    </div>
+    }
+    @if (rotaMaisCurta) {
+    <div class="route-stat">
+      <div class="route-stat-label">Rota mais curta</div>
+      <div class="route-stat-value">{{ rotaMaisCurta.distanciaTotal }} km</div>
+      <div class="route-stat-trecho">
+        {{ rotaMaisCurta.origem.split(',')[0] }} →
+        {{ rotaMaisCurta.destino.split(',')[0] }}
       </div>
-
-      <div class="chart">
-
-          <h3>Combustíveis</h3>
-
-          <canvas id="fuelChart"></canvas>
-
+    </div>
+    }
+    @if (rotaMaisCara) {
+    <div class="route-stat">
+      <div class="route-stat-label">Rota mais cara</div>
+      <div class="route-stat-value">
+        R$ {{ rotaMaisCara.custoEstimado.toFixed(2) }}
       </div>
-
-      <div class="chart">
-
-          <h3>Postos</h3>
-
-          <canvas id="stationChart"></canvas>
-
+      <div class="route-stat-trecho">
+        {{ rotaMaisCara.origem.split(',')[0] }} →
+        {{ rotaMaisCara.destino.split(',')[0] }}
       </div>
-
-      <div class="chart full">
-
-          <h3>Rotas</h3>
-
-          <canvas id="routeChart"></canvas>
-
+    </div>
+    }
+    @if (rotaMaisBarata) {
+    <div class="route-stat">
+      <div class="route-stat-label">Rota mais barata</div>
+      <div class="route-stat-value">
+        R$ {{ rotaMaisBarata.custoEstimado.toFixed(2) }}
       </div>
-
+      <div class="route-stat-trecho">
+        {{ rotaMaisBarata.origem.split(',')[0] }} →
+        {{ rotaMaisBarata.destino.split(',')[0] }}
+      </div>
+    </div>
+    }
   </div>
+  }
 
-  <div class="insights">
-
-      <h2>Insights Inteligentes</h2>
-
-      <ul>
-
-        <li>✔ Melhor posto: {{bestStation}}</li>
-
-        <li>✔ Economia estimada: R$ {{saving}}</li>
-
-        <li>✔ Consumo acima da média</li>
-
-        <li>✔ Autonomia restante: {{autonomy}} km</li>
-
-      </ul>
-
-  </div>
+  }
 
 </div>
