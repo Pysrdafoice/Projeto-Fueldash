@@ -1,3 +1,4 @@
+
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -16,14 +17,13 @@ export class LandingComponent implements OnInit, OnDestroy {
   readonly slideDurationMs = 7000;
 
   currentIndex = 0;
-  progressWidths: number[] = new Array(this.totalSlides).fill(0);
+  isPaused = false;
+  userInteracted = false; // Segue a lógica do vídeo: interação cancela o timer
 
-  private autoplayTimer?: ReturnType<typeof setTimeout>;
-  private progressFrame?: number;
-  private isPaused = false;
+  private autoplayInterval?: ReturnType<typeof setInterval>;
   private prefersReducedMotion = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.prefersReducedMotion = typeof window !== 'undefined'
@@ -35,35 +35,34 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.clearTimers();
+    this.stopAutoplay();
   }
 
+  // --- Lógica de Navegação ---
+
   goTo(index: number): void {
+    this.handleUserInteraction();
     this.currentIndex = (index + this.totalSlides) % this.totalSlides;
-    this.resetProgress();
-    if (!this.prefersReducedMotion && !this.isPaused) {
-      this.restartAutoplay();
-    }
   }
 
   next(): void {
-    this.goTo(this.currentIndex + 1);
+    this.handleUserInteraction();
+    this.currentIndex = (this.currentIndex + 1) % this.totalSlides;
   }
 
   previous(): void {
-    this.goTo(this.currentIndex - 1);
+    this.handleUserInteraction();
+    this.currentIndex = (this.currentIndex - 1 + this.totalSlides) % this.totalSlides;
   }
+
+  // --- Eventos de Mouse e Teclado ---
 
   onMouseEnter(): void {
     this.isPaused = true;
-    this.clearTimers();
   }
 
   onMouseLeave(): void {
     this.isPaused = false;
-    if (!this.prefersReducedMotion) {
-      this.restartAutoplay();
-    }
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -76,6 +75,8 @@ export class LandingComponent implements OnInit, OnDestroy {
     }
   }
 
+  // --- Ações de Rota ---
+
   criarConta(): void {
     this.router.navigate(['/login'], { queryParams: { modo: 'cadastro' } });
   }
@@ -84,46 +85,27 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
+  // --- Controle do Carrossel (Lógica do Vídeo) ---
+
   private startAutoplay(): void {
-    this.animateProgress();
-    this.autoplayTimer = setTimeout(() => this.next(), this.slideDurationMs);
-  }
+    this.autoplayInterval = setInterval(() => {
+      if (!this.isPaused && !this.userInteracted) {
+        this.currentIndex = (this.currentIndex + 1) % this.totalSlides;
 
-  private restartAutoplay(): void {
-    this.clearTimers();
-    this.startAutoplay();
-  }
-
-  private resetProgress(): void {
-    this.progressWidths = this.progressWidths.map((_, i) => (i < this.currentIndex ? 100 : 0));
-  }
-
-  private animateProgress(): void {
-    this.resetProgress();
-    const start = performance.now();
-
-    const step = (timestamp: number) => {
-      if (this.isPaused) {
-        return;
+        // Esta linha é a mágica: avisa o Angular para atualizar o HTML na mesma hora!
+        this.cdr.detectChanges();
       }
-      const elapsed = timestamp - start;
-      const pct = Math.min(100, (elapsed / this.slideDurationMs) * 100);
-      this.progressWidths[this.currentIndex] = pct;
-
-      if (pct < 100) {
-        this.progressFrame = requestAnimationFrame(step);
-      }
-    };
-
-    this.progressFrame = requestAnimationFrame(step);
+    }, this.slideDurationMs);
   }
 
-  private clearTimers(): void {
-    if (this.autoplayTimer) {
-      clearTimeout(this.autoplayTimer);
+  private stopAutoplay(): void {
+    if (this.autoplayInterval) {
+      clearInterval(this.autoplayInterval);
     }
-    if (this.progressFrame) {
-      cancelAnimationFrame(this.progressFrame);
-    }
+  }
+
+  private handleUserInteraction(): void {
+    this.userInteracted = true; // Marca que o usuário assumiu o controle
+    this.stopAutoplay();        // Executa o clearInterval (como no vídeo)
   }
 }

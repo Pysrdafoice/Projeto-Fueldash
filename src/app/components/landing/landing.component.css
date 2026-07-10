@@ -245,12 +245,39 @@
   outline-offset: 3px;
 }
 
+/* --- Substitua a antiga .gauge-fill por este bloco --- */
+
 .gauge-fill {
   display: block;
   height: 100%;
+  width: 0%; /* Começa zerado */
   background: var(--fd-primary);
 }
 
+/* Animação fluida via GPU (Dura exatamente os 7000ms do TS) */
+@keyframes fillProgress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.gauge-fill.active {
+  animation: fillProgress 7s linear forwards;
+}
+
+.gauge-fill.completed {
+  width: 100%;
+}
+
+/* Se o mouse estiver em cima, a animação CSS pausa junto com o TS! */
+.carousel.paused .gauge-fill.active {
+  animation-play-state: paused;
+}
+
+/* Se o usuário clicou nas setas/bolinhas, preenche a barrinha e para a animação */
+.carousel.interacted .gauge-fill.active {
+  animation: none;
+  width: 100%;
+}
 .landing-footer {
   padding: 20px 40px;
   text-align: center;

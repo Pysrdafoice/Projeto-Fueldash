@@ -1,5 +1,4 @@
 <div class="landing-page">
-
   <div class="landing-topbar-gradient" aria-hidden="true"></div>
 
   <header class="landing-header">
@@ -9,6 +8,8 @@
 
   <section
     class="carousel"
+    [class.paused]="isPaused"
+    [class.interacted]="userInteracted"
     role="region"
     aria-roledescription="carrossel"
     aria-label="Apresentação do FuelDash"
@@ -19,7 +20,6 @@
       class="carousel-track"
       [style.transform]="'translateX(-' + (currentIndex * (100 / totalSlides)) + '%)'"
     >
-
       <div class="slide">
         <span class="eyebrow">FuelDash</span>
         <h1>Seja bem-vindo ao futuro do controle de consumo</h1>
@@ -72,7 +72,6 @@
         <p>O dashboard analisa o histórico cruzado dos passos anteriores e gera insights imediatos e históricos de preços nos postos de combustível.</p>
         <button class="btn-primary" (click)="criarConta()">Criar conta grátis</button>
       </div>
-
     </div>
 
     <button class="nav-arrow nav-arrow-left" (click)="previous()" aria-label="Slide anterior">
@@ -92,7 +91,10 @@
         [attr.aria-label]="'Ir para o slide ' + (i + 1)"
         (click)="goTo(i)"
       >
-        <span class="gauge-fill" [style.width.%]="progressWidths[i]"></span>
+        <span class="gauge-fill"
+              [class.active]="i === currentIndex"
+              [class.completed]="i < currentIndex">
+        </span>
       </button>
     }
   </div>
@@ -102,7 +104,5 @@
   <footer class="landing-footer">
     <p>FuelDash © 2026 · Dashboard inteligente de gestão de abastecimento</p>
     <p>Desenvolvido por Anderson da cruz gomes</p>
-
   </footer>
-
 </div>
