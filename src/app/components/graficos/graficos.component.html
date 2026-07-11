@@ -6,7 +6,7 @@
       <i class="ti ti-arrow-left" aria-hidden="true"></i> Dashboard
     </button>
     <h1 class="page-title">Analytics</h1>
-    <span class="periodo-label">Últimos {{ periodoMeses }} meses</span>
+    <span class="periodo-label">Últimos {{ getLabelPeriodo() }} meses</span>
   </div>
 
   <!-- Sem veículo -->
@@ -33,13 +33,17 @@
 
   <!-- Filtro de período -->
   <div class="periodo-row">
-    <button class="filter-btn" [class.active]="periodoMeses === 3"
-            (click)="setPeriodo(3)">3 meses</button>
-    <button class="filter-btn" [class.active]="periodoMeses === 6"
-            (click)="setPeriodo(6)">6 meses</button>
-    <button class="filter-btn" [class.active]="periodoMeses === 12"
-            (click)="setPeriodo(12)">12 meses</button>
-  </div>
+  <button class="filter-btn" [class.active]="periodoFiltro === '7d'"
+          (click)="setPeriodo('7d')">7 dias</button>
+  <button class="filter-btn" [class.active]="periodoFiltro === '1m'"
+          (click)="setPeriodo('1m')">1 mês</button>
+  <button class="filter-btn" [class.active]="periodoFiltro === '3m'"
+          (click)="setPeriodo('3m')">3 meses</button>
+  <button class="filter-btn" [class.active]="periodoFiltro === '6m'"
+          (click)="setPeriodo('6m')">6 meses</button>
+  <button class="filter-btn" [class.active]="periodoFiltro === '12m'"
+          (click)="setPeriodo('12m')">12 meses</button>
+</div>
 
   <!-- Alerta de economia -->
   @if (economiaR$ > 0 && melhorPosto) {
@@ -57,7 +61,7 @@
     <div class="kpi-card">
       <div class="kpi-label">Total gasto</div>
       <div class="kpi-value">R$ {{ totalGasto.toFixed(2) }}</div>
-      <div class="kpi-sub">últimos {{ periodoMeses }} meses</div>
+      <div class="kpi-sub">últimos {{ getLabelPeriodo() }} meses</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-label">Consumo médio</div>
@@ -156,7 +160,7 @@
     @if (rotaMaisLonga) {
     <div class="route-stat">
       <div class="route-stat-label">Rota mais longa</div>
-      <div class="route-stat-value">{{ rotaMaisLonga.distanciaTotal }} km</div>
+      <div class="route-stat-value">{{ arredondarKm(rotaMaisLonga.distanciaTotal) }} km</div>
       <div class="route-stat-trecho">
         {{ rotaMaisLonga.origem.split(',')[0] }} →
         {{ rotaMaisLonga.destino.split(',')[0] }}
@@ -166,7 +170,7 @@
     @if (rotaMaisCurta) {
     <div class="route-stat">
       <div class="route-stat-label">Rota mais curta</div>
-      <div class="route-stat-value">{{ rotaMaisCurta.distanciaTotal }} km</div>
+      <div class="route-stat-value">{{ arredondarKm(rotaMaisCurta.distanciaTotal) }} km</div>
       <div class="route-stat-trecho">
         {{ rotaMaisCurta.origem.split(',')[0] }} →
         {{ rotaMaisCurta.destino.split(',')[0] }}

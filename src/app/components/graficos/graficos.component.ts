@@ -39,7 +39,7 @@ export class GraficosComponent implements OnInit, OnDestroy {
   economiaR$:     number = 0;
 
   // ── Período ──
-  periodoMeses: 3 | 6 | 12 = 3;
+  periodoFiltro: '7d' | '1m' | '3m' | '6m' | '12m' = '3m';
 
   // ── Análise de rotas ──
   rotaMaisLonga:  Route | null = null;
@@ -97,9 +97,9 @@ export class GraficosComponent implements OnInit, OnDestroy {
     this.atualizarDados();
   }
 
-  setPeriodo(meses: 3 | 6 | 12): void {
-    this.periodoMeses = meses;
-    this.atualizarDados();
+  setPeriodo(filtro: '7d' | '1m' | '3m' | '6m' | '12m'): void {
+  this.periodoFiltro = filtro;
+  this.atualizarDados();
   }
 
   // ────────────────────────────────────────
@@ -127,10 +127,16 @@ export class GraficosComponent implements OnInit, OnDestroy {
   }
 
   private getDataCorte(): Date {
-    const d = new Date();
-    d.setMonth(d.getMonth() - this.periodoMeses);
-    return d;
+  const d = new Date();
+  switch (this.periodoFiltro) {
+    case '7d': d.setDate(d.getDate() - 7);    break;
+    case '1m': d.setMonth(d.getMonth() - 1);  break;
+    case '3m': d.setMonth(d.getMonth() - 3);  break;
+    case '6m': d.setMonth(d.getMonth() - 6);  break;
+    case '12m': d.setFullYear(d.getFullYear() - 1); break;
   }
+  return d;
+}
 
   // ────────────────────────────────────────
   // MÉTRICAS
@@ -166,8 +172,8 @@ export class GraficosComponent implements OnInit, OnDestroy {
         .filter(c => c.posto === cheapest)
         .reduce((s, c) => s + c.precoPorLitro, 0) /
         Math.max(1, this.costs.filter(c => c.posto === cheapest).length);
-      const litrosMes   = this.costs.reduce((s, c) => s + c.litros, 0) /
-                          this.periodoMeses;
+      const periodo = Number(this.periodoFiltro) || 1;
+      const litrosMes   = this.costs.reduce((s, c) => s + c.litros, 0) / periodo;
       this.economiaR$   = parseFloat(
         Math.max(0, litrosMes * (precoMedio - precoMelhor)).toFixed(2)
       );
@@ -186,6 +192,7 @@ export class GraficosComponent implements OnInit, OnDestroy {
       this.rotaMaisBarata = null;
       return;
     }
+    
     this.rotaMaisLonga  = this.routes.reduce((a, b) =>
       a.distanciaTotal > b.distanciaTotal ? a : b);
     this.rotaMaisCurta  = this.routes.reduce((a, b) =>
@@ -261,7 +268,9 @@ export class GraficosComponent implements OnInit, OnDestroy {
           label: 'Gasto (R$)',
           data,
           backgroundColor: '#f97316',
-          borderRadius: 4
+          borderRadius: 4,
+            maxBarThickness: 60
+
         }]
       },
       options: {
@@ -338,7 +347,8 @@ export class GraficosComponent implements OnInit, OnDestroy {
           label: 'Preço médio/L (R$)',
           data:  this.rankingPostos.map(p => p.media),
           backgroundColor: cores,
-          borderRadius: 4
+          borderRadius: 4,
+          maxBarThickness: 40
         }]
       },
       options: {
@@ -370,9 +380,11 @@ export class GraficosComponent implements OnInit, OnDestroy {
     const chart = new Chart(canvas, {
       type: 'bar',
       data: {
-        labels: top5.map(r =>
-          r.origem.split(',')[0] + ' → ' + r.destino.split(',')[0]
-        ),
+      labels: top5.map(r => {
+        const orig   = r.origem.split(',')[0].slice(0, 20);
+        const dest   = r.destino.split(',')[0].slice(0, 20);
+        return orig + ' → ' + dest;
+      }),
         datasets: [{
           label: 'Custo estimado (R$)',
           data: top5.map(r => parseFloat(r.custoEstimado.toFixed(2))),
@@ -387,8 +399,14 @@ export class GraficosComponent implements OnInit, OnDestroy {
         scales: {
           x: {
             ticks: {
-              color: '#7a7d8a', font: { size: 10 },
-              maxRotation: 30, autoSkip: false
+              color: '#7a7d8a',
+              font: { size: 10 },
+              maxRotation: 45,
+              autoSkip: false,
+              callback: function(val, index) {
+                const label = this.getLabelForValue(val as number);
+                return label.length > 25 ? label.slice(0, 25) + '…' : label;
+              }
             },
             grid: { color: 'rgba(255,255,255,0.05)' }
           },
@@ -407,6 +425,21 @@ export class GraficosComponent implements OnInit, OnDestroy {
 
   voltar(): void {
     this.router.navigate(['/dashboard']);
+  }
+  
+  getLabelPeriodo(): string {
+  const map: Record<string, string> = {
+    '7d':  'Últimos 7 dias',
+    '1m':  'Último mês',
+    '3m':  'Últimos 3 meses',
+    '6m':  'Últimos 6 meses',
+    '12m': 'Últimos 12 meses'
+  };
+  return map[this.periodoFiltro];
+}
+
+  arredondarKm(km: number): number {
+  return Math.round(km);
   }
 
   formatDate(dateStr: string): string {

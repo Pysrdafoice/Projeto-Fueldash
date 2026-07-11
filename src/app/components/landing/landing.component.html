@@ -16,9 +16,8 @@
     (mouseleave)="onMouseLeave()"
   >
     <div
-      class="carousel-track"
-      [style.transform]="'translateX(-' + (currentIndex * (100 / totalSlides)) + '%)'"
-    >
+    class="carousel-track"
+    [style.transform]="carouselTransform">
 
       <div class="slide">
         <span class="eyebrow">FuelDash</span>
@@ -92,7 +91,10 @@
         [attr.aria-label]="'Ir para o slide ' + (i + 1)"
         (click)="goTo(i)"
       >
-        <span class="gauge-fill" [style.width.%]="progressWidths[i]"></span>
+      <span
+      class="gauge-fill"
+      [class.active]="i==currentIndex">
+      </span>
       </button>
     }
   </div>
