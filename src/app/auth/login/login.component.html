@@ -1,6 +1,11 @@
+
 <div class="login-page">
-  <a routerLink="/">← Voltar</a>
+ 
   <div class="login-card">
+     <a class="back-link" routerLink="/landing">
+  <i class="ti ti-arrow-left" aria-hidden="true"></i>
+  Voltar
+</a>
     <!-- Logo/Brand -->
     <div class="brand">
       <h1>FuelDash<span class="dot">.</span></h1>
@@ -69,20 +74,46 @@
         </div>
       </div>
 
-      <!-- Checkbox de termos -->
-      <div class="form-group checkbox-terms">
-        <input id="acceptTerms" type="checkbox" formControlName="acceptTerms" />
-        <label for="acceptTerms">
-          Aceito os
-          <a href="javascript:void(0)" class="link-accent">termos de uso</a>
-        </label>
-        <div
-          class="error-field"
-          *ngIf="acceptTerms.errors && acceptTerms.touched"
-        >
-          Você deve aceitar os termos
-        </div>
-      </div>
+      <!-- Checkboxes de termos -->
+<div class="form-group terms-group">
+
+  <!-- Checkbox 1 — Política de Dados -->
+  <div class="checkbox-row">
+    <input id="acceptTerms" type="checkbox" formControlName="acceptTerms"/>
+    <label for="acceptTerms" class="terms-text">
+      Li e concordo com a
+      <a class="terms-link"
+         href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm"
+         target="_blank"
+         rel="noopener noreferrer">
+        Política de Dados
+      </a>
+      do FuelDash.
+    </label>
+  </div>
+
+  <!-- Checkbox 2 — Termos de Privacidade LGPD -->
+  <div class="checkbox-row">
+    <input id="acceptLgpd" type="checkbox" formControlName="acceptLgpd"/>
+    <label for="acceptLgpd" class="terms-text">
+      Li e concordo com os
+      <a class="terms-link"
+         href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm"
+         target="_blank"
+         rel="noopener noreferrer">
+        Termos de Privacidade (LGPD)
+      </a>
+      do FuelDash.
+    </label>
+  </div>
+
+  <div class="error-field"
+       *ngIf="(acceptTerms.errors && acceptTerms.touched) ||
+              (acceptLgpd.errors && acceptLgpd.touched)">
+    Você deve aceitar todos os termos
+  </div>
+
+</div>
 
       <!-- Botão Submit -->
       <button
