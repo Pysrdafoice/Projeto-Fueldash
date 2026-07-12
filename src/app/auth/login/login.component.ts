@@ -45,6 +45,8 @@ export class LoginComponent implements OnInit {
       username: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(4)]],
       acceptTerms: [false, [Validators.requiredTrue]],
+      acceptLgpd:  [false, Validators.requiredTrue]  // ← novo campo
+
     });
   }
 
@@ -83,4 +85,8 @@ export class LoginComponent implements OnInit {
   get acceptTerms() {
     return this.loginForm.get('acceptTerms')!;
   }
+
+  get acceptLgpd() {
+  return this.loginForm.get('acceptLgpd')!;
+}
 }
