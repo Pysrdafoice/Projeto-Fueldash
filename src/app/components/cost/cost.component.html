@@ -149,12 +149,24 @@
         <option value="">Selecione</option>
         @if (activeVehicle?.combustivel === 'flex' ||
              activeVehicle?.combustivel === 'hibrido') {
-          <option value="gasolina">Gasolina</option>
-          <option value="etanol">Etanol</option>
-        } @else {
-          <option [value]="activeVehicle?.combustivel">
-            {{ activeVehicle?.combustivel | titlecase }}
-          </option>
+          <option value="gasolina">⛽ Gasolina</option>
+          <option value="etanol">🌿 Etanol</option>
+        }
+        @if (activeVehicle?.combustivel === 'diesel') {
+          <option value="diesel">🚛 Diesel</option>
+          <option value="diesel-s10">🚛 Diesel S-10</option>
+        }
+        @if (activeVehicle?.combustivel === 'eletrico') {
+          <option value="recarga">⚡ Recarga elétrica</option>
+        }
+        @if (activeVehicle?.combustivel !== 'flex'    &&
+             activeVehicle?.combustivel !== 'hibrido' &&
+             activeVehicle?.combustivel !== 'diesel'  &&
+             activeVehicle?.combustivel !== 'eletrico') {
+          <option value="gasolina">⛽ Gasolina</option>
+          <option value="etanol">🌿 Etanol</option>
+          <option value="diesel">🚛 Diesel</option>
+          <option value="recarga">⚡ Recarga elétrica</option>
         }
       </select>
       @if (getError('tipoCombustivel')) {
