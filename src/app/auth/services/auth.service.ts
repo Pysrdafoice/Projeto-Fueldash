@@ -51,6 +51,28 @@ export class AuthService {
   }
 
   /**
+   * Simula o registro de um novo usuário
+   * @param username Nome do usuário
+   * @param email Email do usuário
+   * @param password Senha do usuário
+   * @returns boolean - sempre true para simular sucesso
+   */
+  register(username: string, email: string, password: string): boolean {
+    // Cria o objeto do novo usuário
+    const newUserData = {
+      username: username,
+      email: email,
+      password: password,
+    };
+
+    // Opcional: Já salva no localStorage para o usuário ser considerado logado logo após criar a conta
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newUserData));
+    
+    console.log('✅ Usuário registrado com sucesso:', username);
+    return true;
+  }
+
+  /**
    * Realiza o logout do usuário
    * Remove os dados do localStorage
    */
@@ -97,7 +119,6 @@ export class AuthService {
 
   /**
    * Verifica se o código fornecido é válido
-   * Aceita "123" como código válido para testes
    *
    * @param code Código enviado para o email
    * @returns boolean - true se código é válido

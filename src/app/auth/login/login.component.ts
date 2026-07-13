@@ -1,92 +1,140 @@
-import { Component, OnInit } from '@angular/core';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../auth/services/auth.service';
-import { CommonModule } from '@angular/common';
-
+import { Component, OnInit }              from '@angular/core';
+import { CommonModule }                   from '@angular/common';
+import { FormsModule, ReactiveFormsModule,
+         FormBuilder, FormGroup,
+         Validators }                     from '@angular/forms';
+import { Router, RouterLink }             from '@angular/router';
+import { AuthService }                    from '../services/auth.service';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  selector:    'app-login',
+  standalone:  true,
+  imports:     [CommonModule, ReactiveFormsModule, FormsModule, RouterLink],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  styleUrls:   ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  // Formulário reativo
-  loginForm!: FormGroup;
 
-  // Controlar visibilidade da senha
-  showPassword = false;
+  // ── Estado da tela ──
+  isSignUp = false;
 
-  // Desabilitar botão durante submit
-  isLoading = false;
+  // ── Login ──
+  loginForm!:   FormGroup;
+  showPassword  = false;
+  isLoading     = false;
+  errorMessage  = '';
 
-  // Exibir erro de credenciais inválidas
-  errorMessage = '';
+  // ── Cadastro ──
+  signupEmail    = '';
+  signupUsername = '';
+  signupPassword = '';
+  showSignupPassword = false;
+  signupErro    = '';
+  signupSucesso = false;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private fb:          FormBuilder,
     private authService: AuthService,
-    private router: Router,
+    private router:      Router
   ) {}
 
-  /**
-   * Inicializa o formulário com validators
-   * Chamado automaticamente pelo Angular após o componente ser criado
-   */
   ngOnInit(): void {
-    this.loginForm = this.formBuilder.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(4)]],
-      acceptTerms: [false, [Validators.requiredTrue]],
-      acceptLgpd:  [false, Validators.requiredTrue]  // ← novo campo
+    this.buildForm();
+  }
 
+  // ────────────────────────────────────────
+  // FORMULÁRIO DE LOGIN
+  // ────────────────────────────────────────
+
+  private buildForm(): void {
+    this.loginForm = this.fb.group({
+      username:    ['', [Validators.required, Validators.minLength(3)]],
+      password:    ['', [Validators.required, Validators.minLength(4)]],
+      acceptTerms: [false, Validators.requiredTrue],
+      acceptLgpd:  [false, Validators.requiredTrue]
     });
   }
 
-  /**
-   * Alterna a visibilidade da senha entre text e password
-   */
+  get username()    { return this.loginForm.get('username')!;    }
+  get password()    { return this.loginForm.get('password')!;    }
+  get acceptTerms() { return this.loginForm.get('acceptTerms')!; }
+  get acceptLgpd()  { return this.loginForm.get('acceptLgpd')!;  }
+
   togglePassword(): void {
     this.showPassword = !this.showPassword;
   }
 
-  /**
-   * Submete o formulário
-   * Chama authService.login(), trata erros e navega para o dashboard
-   */
   onSubmit(): void {
-    const success = this.authService.login({
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading    = true;
+    this.errorMessage = '';
+
+    const sucesso = this.authService.login({
       username: this.loginForm.value.username,
-      password: this.loginForm.value.password,
+      password: this.loginForm.value.password
     });
 
-    if (success) {
-      this.router.navigate(['/dashboard']); 
+    this.isLoading = false;
+
+    if (sucesso) {
+      this.router.navigate(['/dashboard']);
     } else {
-      this.errorMessage = 'Usuário ou senha inválidos';
+      this.errorMessage = 'Usuário ou senha inválidos.';
     }
   }
-  
-  get username() {
-    return this.loginForm.get('username')!;
+
+  // ────────────────────────────────────────
+  // FORMULÁRIO DE CADASTRO
+  // ────────────────────────────────────────
+
+  onSignUp(): void {
+    this.signupErro    = '';
+    this.signupSucesso = false;
+
+    if (!this.signupEmail || !this.signupUsername || !this.signupPassword) {
+      this.signupErro = 'Preencha todos os campos.';
+      return;
+    }
+
+    if (this.signupPassword.length < 6) {
+      this.signupErro = 'A senha deve ter no mínimo 6 caracteres.';
+      return;
+    }
+
+    const sucesso = this.authService.register(
+      this.signupUsername,
+      this.signupEmail,
+      this.signupPassword
+    );
+
+    if (sucesso) {
+      this.signupSucesso = true;
+      this.signupEmail    = '';
+      this.signupUsername = '';
+      this.signupPassword = '';
+      // Volta para login após 2 segundos
+      setTimeout(() => {
+        this.toggleMode();
+        this.signupSucesso = false;
+      }, 2000);
+    } else {
+      this.signupErro = 'Nome de usuário já existe. Escolha outro.';
+    }
   }
 
-  get password() {
-    return this.loginForm.get('password')!;
-  }
+  // ────────────────────────────────────────
+  // TOGGLE ENTRE LOGIN E CADASTRO
+  // ────────────────────────────────────────
 
-  get acceptTerms() {
-    return this.loginForm.get('acceptTerms')!;
+  toggleMode(): void {
+    this.isSignUp     = !this.isSignUp;
+    this.errorMessage = '';
+    this.signupErro   = '';
+    this.signupSucesso = false;
+    this.loginForm.reset();
   }
-
-  get acceptLgpd() {
-  return this.loginForm.get('acceptLgpd')!;
-}
 }

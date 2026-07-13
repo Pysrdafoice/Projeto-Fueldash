@@ -1,135 +1,164 @@
-
 <div class="login-page">
- 
-  <div class="login-card">
-     <a class="back-link" routerLink="/landing">
-  <i class="ti ti-arrow-left" aria-hidden="true"></i>
-  Voltar
-</a>
-    <!-- Logo/Brand -->
-    <div class="brand">
-      <h1>FuelDash<span class="dot">.</span></h1>
-    </div>
 
+  <!-- Botão voltar -->
+  <a class="back-link" routerLink="/landing">
+    <i class="ti ti-arrow-left" aria-hidden="true"></i>
+    Voltar
+  </a>
 
-    <!-- Título e descrição -->
-    <div class="login-header">
-      <h2>Bem-vindo</h2>
-      <p>Entre na sua conta para continuar</p>
-    </div>
+  <!-- Container principal com efeito flip -->
+  <div class="auth-container" [class.active]="isSignUp">
 
-    <!-- Erro global -->
-    <div *ngIf="errorMessage" class="error-global">
-      {{ errorMessage }}
-    </div>
+    <!-- ── Formulário de Login ── -->
+    <div class="form-side form-signin">
+      <div class="form-brand">FuelDash<span class="dot">.</span></div>
+      <h2 class="form-title">Bem-vindo de volta</h2>
+      <p class="form-sub">Entre na sua conta para continuar</p>
 
-    <!-- Formulário de login -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <!-- Campo Username -->
-      <div class="form-group">
-        <label for="username">Usuário</label>
-        <input
-          id="username"
-          type="text"
-          formControlName="username"
-          placeholder="admin"
-          class="form-control"
-        />
-        <div class="error-field" *ngIf="username.errors && username.touched">
-          <span *ngIf="username.errors['required']">
-            Usuário é obrigatório
-          </span>
-          <span *ngIf="username.errors['minlength']">
-            Mínimo 3 caracteres
-          </span>
+      <div *ngIf="errorMessage" class="error-global">{{ errorMessage }}</div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+
+        <div class="field">
+          <label for="username">Usuário</label>
+          <input id="username" type="text"
+                 formControlName="username"
+                 placeholder="admin">
+          <div class="field-error"
+               *ngIf="username.errors && username.touched">
+            <span *ngIf="username.errors['required']">Campo obrigatório</span>
+            <span *ngIf="username.errors['minlength']">Mínimo 3 caracteres</span>
+          </div>
         </div>
+
+        <div class="field">
+          <label for="password">Senha</label>
+          <div class="input-wrap">
+            <input id="password"
+                   [type]="showPassword ? 'text' : 'password'"
+                   formControlName="password"
+                   placeholder="••••••">
+            <button type="button" class="btn-eye"
+                    (click)="togglePassword()">
+              <i class="ti" [class.ti-eye]="!showPassword"
+                            [class.ti-eye-off]="showPassword"
+                            aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="field-error"
+               *ngIf="password.errors && password.touched">
+            <span *ngIf="password.errors['required']">Campo obrigatório</span>
+            <span *ngIf="password.errors['minlength']">Mínimo 4 caracteres</span>
+          </div>
+        </div>
+
+        <!-- Checkboxes de termos -->
+        <div class="terms-group">
+          <div class="checkbox-row">
+            <input id="acceptTerms" type="checkbox"
+                   formControlName="acceptTerms">
+            <label for="acceptTerms" class="terms-text">
+              Li e concordo com a
+              <a class="terms-link"
+                 href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm"
+                 target="_blank" rel="noopener noreferrer">
+                Política de Dados
+              </a>
+            </label>
+          </div>
+          <div class="checkbox-row">
+            <input id="acceptLgpd" type="checkbox"
+                   formControlName="acceptLgpd">
+            <label for="acceptLgpd" class="terms-text">
+              Li e concordo com os
+              <a class="terms-link"
+                 href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm"
+                 target="_blank" rel="noopener noreferrer">
+                Termos de Privacidade (LGPD)
+              </a>
+            </label>
+          </div>
+          <div class="field-error"
+               *ngIf="(acceptTerms.errors && acceptTerms.touched) ||
+                      (acceptLgpd.errors && acceptLgpd.touched)">
+            Aceite todos os termos para continuar
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit"
+                [disabled]="loginForm.invalid || isLoading">
+          {{ isLoading ? 'Entrando...' : 'Entrar' }}
+        </button>
+
+        <a class="forgot-link" routerLink="/forgot-password">
+          Esqueci minha senha
+        </a>
+
+      </form>
+    </div>
+
+    <!-- ── Formulário de Cadastro ── -->
+    <div class="form-side form-signup">
+      <div class="form-brand">FuelDash<span class="dot">.</span></div>
+      <h2 class="form-title">Criar conta</h2>
+      <p class="form-sub">Preencha os dados para começar</p>
+
+      <div *ngIf="signupErro" class="error-global">{{ signupErro }}</div>
+      <div *ngIf="signupSucesso" class="success-global">
+        Conta criada com sucesso! Faça login.
       </div>
 
-      <!-- Campo Password -->
-      <div class="form-group">
-        <label for="password">Senha</label>
-        <div class="input-icon-wrap">
-          <input
-            id="password"
-            [type]="showPassword ? 'text' : 'password'"
-            formControlName="password"
-            placeholder="••••••"
-            class="form-control"
-          />
-          <button
-            type="button"
-            class="btn-toggle-password"
-            (click)="togglePassword()"
-            tabindex="-1"
-          >
-            <span *ngIf="!showPassword">👁️</span>
-            <span *ngIf="showPassword">👁️‍🗨️</span>
-          </button>
+      <form class="auth-form" (ngSubmit)="onSignUp()">
+
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" placeholder="seu@email.com"
+                 [(ngModel)]="signupEmail" name="signupEmail">
         </div>
-        <div class="error-field" *ngIf="password.errors && password.touched">
-          <span *ngIf="password.errors['required']"> Senha é obrigatória </span>
-          <span *ngIf="password.errors['minlength']">
-            Mínimo 4 caracteres
-          </span>
+
+        <div class="field">
+          <label>Nome de usuário</label>
+          <input type="text" placeholder="Ex: joao.silva"
+                 [(ngModel)]="signupUsername" name="signupUsername">
         </div>
-      </div>
 
-      <!-- Checkboxes de termos -->
-<div class="form-group terms-group">
+        <div class="field">
+          <label>Senha</label>
+          <div class="input-wrap">
+            <input [type]="showSignupPassword ? 'text' : 'password'"
+                   placeholder="Mínimo 6 caracteres"
+                   [(ngModel)]="signupPassword" name="signupPassword">
+            <button type="button" class="btn-eye"
+                    (click)="showSignupPassword = !showSignupPassword">
+              <i class="ti" [class.ti-eye]="!showSignupPassword"
+                            [class.ti-eye-off]="showSignupPassword"
+                            aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
 
-  <!-- Checkbox 1 — Política de Dados -->
-  <div class="checkbox-row">
-    <input id="acceptTerms" type="checkbox" formControlName="acceptTerms"/>
-    <label for="acceptTerms" class="terms-text">
-      Li e concordo com a
-      <a class="terms-link"
-         href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm"
-         target="_blank"
-         rel="noopener noreferrer">
-        Política de Dados
-      </a>
-      do FuelDash.
-    </label>
-  </div>
+        <button type="submit" class="btn-submit"
+                [disabled]="!signupEmail || !signupUsername || !signupPassword">
+          Criar conta grátis
+        </button>
 
-  <!-- Checkbox 2 — Termos de Privacidade LGPD -->
-  <div class="checkbox-row">
-    <input id="acceptLgpd" type="checkbox" formControlName="acceptLgpd"/>
-    <label for="acceptLgpd" class="terms-text">
-      Li e concordo com os
-      <a class="terms-link"
-         href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm"
-         target="_blank"
-         rel="noopener noreferrer">
-        Termos de Privacidade (LGPD)
-      </a>
-      do FuelDash.
-    </label>
-  </div>
+      </form>
+    </div>
 
-  <div class="error-field"
-       *ngIf="(acceptTerms.errors && acceptTerms.touched) ||
-              (acceptLgpd.errors && acceptLgpd.touched)">
-    Você deve aceitar todos os termos
-  </div>
-
-</div>
-
-      <!-- Botão Submit -->
-      <button
-        type="submit"
-        class="btn-primary"
-        [disabled]="loginForm.invalid || isLoading"
-      >
-        {{ isLoading ? "Entrando..." : "Entrar" }}
+    <!-- ── Painel deslizante laranja ── -->
+    <div class="toggle-panel">
+      <p class="toggle-logo">FuelDash.</p>
+      <h3 class="toggle-title">{{ isSignUp ? 'Já tem conta?' : 'Novo por aqui?' }}</h3>
+      <p class="toggle-sub">
+        {{ isSignUp
+          ? 'Entre na sua conta para continuar acompanhando seus gastos.'
+          : 'Crie sua conta e comece a controlar seus gastos com combustível.' }}
+      </p>
+      <button class="btn-toggle" (click)="toggleMode()">
+        {{ isSignUp ? 'Já tenho conta' : 'Criar conta' }}
       </button>
-    </form>
-
-    <!-- Link para Esqueci Senha -->
-    <div class="forgot-password-link">
-      <a routerLink="/forgot-password" class="link-accent">
-        Esqueci minha senha
-      </a>
     </div>
+
   </div>
+
 </div>
