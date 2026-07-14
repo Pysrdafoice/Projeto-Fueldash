@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 24px;
   min-height: 100vh;
+  box-sizing: border-box;  /* ← garante que padding não estoura a tela */
 }
 
 /* ── Top bar ── */
@@ -11,6 +12,8 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 24px;
+  flex-wrap: wrap;          /* ← quebra em telas pequenas */
+  gap: 8px;
 }
 
 .back-btn {
@@ -71,6 +74,7 @@
 .periodo-row {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;          /* ← quebra se não couber */
   margin-bottom: 20px;
 }
 
@@ -112,7 +116,7 @@
 /* ── KPIs ── */
 .kpis-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
   margin-bottom: 24px;
 }
@@ -122,6 +126,7 @@
   border: 0.5px solid rgba(255,255,255,0.08);
   border-radius: 14px;
   padding: 16px;
+  min-width: 0;             /* ← evita overflow em grid */
 }
 
 .kpi-label {
@@ -135,13 +140,14 @@
 
 .kpi-value {
   font-family: 'Syne', sans-serif;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: #f1f0ed;
   line-height: 1;
+  word-break: break-word;   /* ← evita overflow em valores longos */
 }
 
-.kpi-value.kpi-accent { color: #f97316; font-size: 16px; }
+.kpi-value.kpi-accent { color: #f97316; font-size: 15px; }
 
 .kpi-sub {
   font-size: 11px;
@@ -162,15 +168,13 @@
   border: 0.5px solid rgba(255,255,255,0.08);
   border-radius: 14px;
   padding: 18px;
+  min-width: 0;             /* ← evita overflow em grid */
+  overflow: hidden;         /* ← canvas não estoura o card */
 }
 
-.chart-full {
-  grid-column: 1 / -1;
-}
+.chart-full { grid-column: 1 / -1; }
 
-.chart-header {
-  margin-bottom: 14px;
-}
+.chart-header { margin-bottom: 14px; }
 
 .chart-title {
   font-family: 'Syne', sans-serif;
@@ -182,8 +186,10 @@
 .chart-wrap {
   position: relative;
   width: 100%;
-  height: 240px;
+  height: 220px;
 }
+
+.chart-full .chart-wrap { height: 260px; }
 
 .chart-empty {
   height: 100px;
@@ -215,6 +221,7 @@
   border: 0.5px solid rgba(255,255,255,0.08);
   border-radius: 10px;
   padding: 14px;
+  min-width: 0;
 }
 
 .route-stat-label {
@@ -238,6 +245,7 @@
   font-size: 11px;
   color: #7a7d8a;
   line-height: 1.4;
+  word-break: break-word;
 }
 
 /* ── Empty full ── */
@@ -252,15 +260,62 @@
   color: #7a7d8a;
 }
 
-.empty-full i { font-size: 40px; }
-.empty-full p { font-size: 16px; color: #f1f0ed; margin: 0; }
+.empty-full i    { font-size: 40px; }
+.empty-full p    { font-size: 16px; color: #f1f0ed; margin: 0; }
 .empty-full span { font-size: 13px; }
 
-/* ── Responsivo ── */
-@media (max-width: 640px) {
-  .graficos-page { padding: 16px; }
-  .charts-grid   { grid-template-columns: 1fr; }
-  .chart-full    { grid-column: 1; }
-  .routes-grid   { grid-template-columns: 1fr; }
-  .kpis-grid     { grid-template-columns: 1fr 1fr; }
+/* ════════════════════════════════════════
+   RESPONSIVO
+════════════════════════════════════════ */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .graficos-page  { padding: 20px 16px; }
+  .page-title     { font-size: 17px; }
+
+  .kpis-grid      { grid-template-columns: 1fr 1fr; }
+
+  .charts-grid    { grid-template-columns: 1fr; }
+  .chart-full     { grid-column: 1; }
+
+  .routes-grid    { grid-template-columns: 1fr 1fr; }
+
+  .chart-wrap          { height: 200px; }
+  .chart-full .chart-wrap { height: 220px; }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .graficos-page  { padding: 16px 12px; }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-title     { font-size: 16px; }
+  .periodo-label  { display: none; } /* ← esconde no mobile — info já está nos botões */
+
+  .kpis-grid      { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi-value      { font-size: 17px; }
+
+  .charts-grid    { grid-template-columns: 1fr; gap: 12px; }
+  .chart-full     { grid-column: 1; }
+
+  .chart-wrap          { height: 180px; }
+  .chart-full .chart-wrap { height: 200px; }
+
+  .routes-grid    { grid-template-columns: 1fr; }
+
+  .vehicle-selector { gap: 6px; }
+  .v-chip         { font-size: 12px; padding: 6px 12px; }
+
+  .periodo-row    { gap: 4px; }
+  .filter-btn     { font-size: 11px; padding: 4px 10px; }
+}
+
+/* Mobile muito pequeno */
+@media (max-width: 360px) {
+  .kpis-grid      { grid-template-columns: 1fr; }
+  .kpi-value      { font-size: 20px; }
 }

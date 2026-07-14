@@ -7,10 +7,11 @@ import { LandingComponent } from './components/landing/landing.component';
 import {GraficosComponent} from './components/graficos/graficos.component';
 export const routes: Routes = [
 
-  { path: '', redirectTo: 'landing', pathMatch: 'full' },
-  { path: 'landing', component: LandingComponent },
 
   // Rotas públicas de autenticação
+  { path: '', redirectTo: 'landing', pathMatch: 'full' },
+  { path: 'landing', component: LandingComponent },
+  
   { path: 'login', component: LoginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
 
@@ -23,6 +24,8 @@ export const routes: Routes = [
 
    {
     path: 'graficos',
-    component: GraficosComponent
+    component: GraficosComponent,
+        canActivate: [authGuard],
+
   }
 ];
